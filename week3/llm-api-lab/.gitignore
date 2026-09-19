@@ -1,0 +1,15 @@
+# uv / Python 产物
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+dist/
+build/
+
+# 凭据与本地配置：**永不提交**
+.env
+.env.*
+*.key
+*credentials*

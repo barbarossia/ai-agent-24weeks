@@ -1,0 +1,50 @@
+# OS/editor metadata
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.idea/
+.vscode/
+
+# Code intelligence and local agent state
+.codegraph/
+**/.codegraph/
+.agents/
+.codex/
+
+# Python caches and environments
+__pycache__/
+*.py[cod]
+*$py.class
+.Python
+.venv/
+venv/
+env/
+ENV/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+pip-wheel-metadata/
+*.egg-info/
+
+# Build and distribution output
+build/
+dist/
+.tox/
+.nox/
+
+# Local configuration and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local logs and databases
+*.log
+*.sqlite
+*.sqlite3
+*.db
+

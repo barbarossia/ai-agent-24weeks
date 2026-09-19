@@ -1,0 +1,32 @@
+{
+  "hosts": [
+    {
+      "name": "esxi-01",
+      "kind": "esxi",
+      "address": "192.168.1.50",
+      "tags": ["virtualization", "critical"],
+      "expected_latency_ms": 120
+    },
+    {
+      "name": "docker-01",
+      "kind": "docker",
+      "address": "192.168.1.63",
+      "tags": ["containers", "critical"],
+      "expected_latency_ms": 80
+    },
+    {
+      "name": "openwrt-01",
+      "kind": "openwrt",
+      "address": "192.168.1.1",
+      "tags": ["network", "gateway"],
+      "expected_latency_ms": 30
+    },
+    {
+      "name": "nas-01",
+      "kind": "host",
+      "address": "192.168.1.10",
+      "tags": ["storage"],
+      "expected_latency_ms": 60
+    }
+  ]
+}

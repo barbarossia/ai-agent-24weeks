@@ -1,0 +1,36 @@
+[project]
+name = "llm-api-lab"
+version = "0.1.0"
+description = "Week 3 - LLM API Fundamentals：消息模型 / 结构化输出 / 重试 / streaming（全程 mock，无需 API key）"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "barbarossia" }]
+dependencies = [
+    # 数据边界：消息、请求/响应、结构化输出 schema 全部用 Pydantic 校验。
+    "pydantic>=2.9,<3",
+    # HTTP 客户端：复用 Week 2 学到的 async HTTP；真实传输通过它实现，
+    # 但本项目的默认与测试路径全部走进程内 mock / httpx.MockTransport，不访问网络。
+    "httpx>=0.27,<1",
+]
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<10",
+    "pytest-asyncio>=0.24,<1",
+]
+
+[project.scripts]
+llm-api-lab = "llm_api_lab.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/llm_api_lab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+# 让 async def 测试函数自动作为 asyncio 用例运行（同 Week 2）。
+asyncio_mode = "auto"

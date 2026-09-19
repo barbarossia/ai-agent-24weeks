@@ -1,0 +1,46 @@
+[project]
+name = "homelab-api"
+version = "0.1.0"
+description = "Week 2 - HomeLab API：async/await + FastAPI 学习项目"
+readme = "README.md"
+requires-python = ">=3.11"
+authors = [{ name = "barbarossia" }]
+dependencies = [
+    # Web 框架：路由、依赖注入、自动 OpenAPI 文档。
+    "fastapi>=0.115,<1",
+    # ASGI 服务器：[standard] 附带 uvloop / httptools / watchfiles / websockets。
+    "uvicorn[standard]>=0.32,<1",
+    # 异步 HTTP 客户端（本周学习目标之一），也用于测试 ASGI 应用。
+    "httpx>=0.27,<1",
+    # 复用 Week 1 的领域层（models / service / errors），不复制代码。
+    "ai-agent-lab",
+]
+
+[dependency-groups]
+# PEP 735 开发期依赖组；uv sync 默认安装。
+dev = [
+    "pytest>=8,<10",
+    "pytest-asyncio>=0.24,<1",
+]
+
+[tool.uv.sources]
+# 关键设计：把 Week 1 项目作为**本地可编辑依赖**接入。
+# editable=true → 直接指向 Week 1 源码目录，改 Week 1 立即在本项目生效，
+# 不需要发版、不需要复制粘贴。这正是 Week 1 README 预告的"service 层被 FastAPI 复用"。
+ai-agent-lab = { path = "../../week1/ai-agent-lab", editable = true }
+
+[project.scripts]
+homelab-api = "homelab_api.__main__:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/homelab_api"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+# 让 async def 测试函数自动作为 asyncio 用例运行，无需逐个加 @pytest.mark.asyncio。
+asyncio_mode = "auto"

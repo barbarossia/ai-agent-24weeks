@@ -1,0 +1,13 @@
+# uv / Python 产物
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+*.egg-info/
+dist/
+build/
+
+# 编辑器 / 系统
+.DS_Store
+.idea/
+.vscode/
