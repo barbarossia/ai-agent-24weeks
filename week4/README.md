@@ -35,7 +35,7 @@ week4/
     │   ├── mock_model.py         # 确定性 mock 模型（工具选择 + 结果转答案）
     │   ├── loop.py                # 完整的 5 步 function-calling 循环
     │   └── cli.py / __main__.py  # 命令行入口
-    └── tests/                     # 16 个用例（工具校验/执行 + 完整循环）
+    └── tests/                     # 18 个用例（工具校验/执行 + 完整循环 + 五步 trace/工具定义断言）
 ```
 
 ## 快速开始
@@ -43,7 +43,7 @@ week4/
 ```bash
 cd tool-calling-lab
 uv sync                       # 安装 Python 3.12 + 依赖
-uv run pytest                 # 16 passed
+uv run pytest                 # 18 passed
 uv run tool-calling-lab       # 运行内置演示问题（无需任何参数/API key）
 ```
 

@@ -54,7 +54,7 @@ def run_once(question: str, model: Optional[MockModel] = None) -> LoopTrace:
     trace = LoopTrace(user_question=question, tool_definitions=tool_definitions)
     trace.steps.append("1. model request (question + tool definitions sent to model)")
 
-    response = model.request(question, tool_names=list(TOOLS.keys()))
+    response = model.request(question, tool_definitions=trace.tool_definitions)
 
     if response.tool_call is None:
         trace.steps.append("2. model responded directly (no tool needed)")
@@ -73,9 +73,12 @@ def run_once(question: str, model: Optional[MockModel] = None) -> LoopTrace:
 
     if tool is None:
         error_message = f"unknown tool requested by model: {response.tool_call.name!r}"
+        trace.steps.append(
+            f"3. tool execution attempted: unknown tool {response.tool_call.name!r} is not registered"
+        )
     else:
+        trace.steps.append("3. tool execution (arguments validated, then tool runs)")
         try:
-            trace.steps.append("3. tool execution (arguments validated, then tool runs)")
             result = tool.execute(response.tool_call.arguments)
         except ValidationError as exc:
             # Bad arguments never reach the mock backend; the loop keeps running.

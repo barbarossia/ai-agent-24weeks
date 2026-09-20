@@ -43,11 +43,25 @@ class MockModel:
     # a real client would log request/response pairs the same way.
     call_log: list[str] = field(default_factory=list)
 
-    def request(self, user_question: str, tool_names: list[str]) -> ModelResponse:
+    # The full tool-definition payload received by the most recent call to
+    # ``request`` — kept around so callers/tests can assert the model was
+    # actually given the JSON-Schema definitions, not just tool names.
+    last_tool_definitions: list[dict[str, Any]] = field(default_factory=list)
+
+    def request(self, user_question: str, tool_definitions: list[dict[str, Any]]) -> ModelResponse:
         """Step 1+2 of the loop: the model receives the question and the
-        available tool definitions, and decides whether to call a tool.
+        available tool definitions (full JSON-Schema ``{"type": "function",
+        "function": {...}}`` dicts, exactly what a real ``tools=[...]``
+        payload would contain), and decides whether to call a tool.
+
+        The available tool *names* used for routing below are derived from
+        the definitions themselves (``tool_definitions[i]["function"]["name"]``)
+        rather than being passed separately, so the definitions are the single
+        source of truth for what the model can see and choose from.
         """
         self.call_log.append(f"request: {user_question!r}")
+        self.last_tool_definitions = tool_definitions
+        tool_names = [definition["function"]["name"] for definition in tool_definitions]
         question_lower = user_question.lower()
 
         domain_match = _DOMAIN_TOKEN.search(user_question)

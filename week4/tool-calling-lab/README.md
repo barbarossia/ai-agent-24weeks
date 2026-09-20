@@ -6,6 +6,13 @@ Calling / Tool Calling）例子。全程使用本地确定性 mock：**不需要
 
 对应笔记：`01-Projects/AI-Agent/24周学习计划/Week-04-Function-Tool-Calling`。
 
+> **Review 修复记录**：首轮 Reviewer 提出两项 CHANGES_REQUESTED（详见仓库外的
+> handoff `review.md`）：P1 — `model.request` 此前只收到工具名字列表，未真正传入
+> JSON-Schema 工具定义；P2 — 模型返回未注册工具名时会跳过第 3 步，只产生四步 trace。
+> 两项均已在本轮修复：`MockModel.request` 现在接收 `tool_definitions`（完整定义列表）
+> 并从中派生工具名；`loop.py` 在未知工具分支也会记录一条第 3 步（尝试调度/未注册），
+> 保证五步 trace 在所有分支下都成立。测试从 16 增至 18（新增两条断言这两项修复）。
+
 ## 这个例子演示什么
 
 一次完整的 function-calling 闭环，只做一轮（不做多步 Agent Loop，那是 Week 5 的主题）：
@@ -32,6 +39,10 @@ User question
 - **Model request / Tool definition**：`tools.py` 里每个 `Tool` 都能渲染出一个
   OpenAI 风格的 `{"type": "function", "function": {...}}` 定义（`parameters` 直接来自
   Pydantic 的 `model_json_schema()`），这与真实模型 API 收到的 `tools=[...]` 形状一致。
+  `loop.py` 把这份完整定义列表（而不是仅仅一份工具名字列表）传给
+  `MockModel.request(question, tool_definitions=...)`；`MockModel` 内部再从
+  `tool_definitions[i]["function"]["name"]` 推导出可用的工具名用于路由决策 —— 这样
+  "模型看到什么"与"工具定义"是同一份数据，descriptions/parameters 都真实地进入了请求。
 - **Model（mock）**：`mock_model.py` 里的 `MockModel` 用关键词 + 正则**确定性**地模拟
   "模型选工具"和"模型读工具结果生成回答"这两步——没有随机性，方便测试和讲解，但接口形状
   （`tool_call` / `content`）与真实模型响应一致，换成真实 provider 时上层循环代码不需要改。
@@ -41,14 +52,16 @@ User question
   - `get_docker_status(host)` — 查询 mock 容器状态
 - **不崩溃**：无效参数（`ValidationError`）和"参数合法但查无此项"（`ToolExecutionError`，
   例如未知主机）都在 `loop.py` 里被捕获，转换成一条 tool-error 结果继续走完整个循环，而不是
-  让程序抛出未处理异常。
+  让程序抛出未处理异常。模型返回一个**未注册**的工具名时同样不会跳过步骤 3：`loop.py` 会先
+  记一条"3. tool execution attempted: unknown tool ... is not registered"的步骤，再落到
+  第 4/5 步的错误处理与最终回答，五步循环在所有分支下都保持五步，不会因为某个分支而缺步骤。
 
 ## 运行
 
 ```bash
 cd week4/tool-calling-lab
 uv sync                       # 安装 Python 3.12 + 依赖（pydantic + pytest）
-uv run pytest                 # 16 passed
+uv run pytest                 # 18 passed
 uv run tool-calling-lab       # 运行内置的 5 个演示问题（无需任何参数/API key）
 uv run tool-calling-lab "What is the status of host web01?"   # 运行自定义问题
 uv run tool-calling-lab --schema   # 打印三个工具的 JSON-Schema 定义
@@ -69,7 +82,8 @@ tool-calling-lab/
 │   └── cli.py / __main__.py  # 命令行入口：demo / 自定义问题 / --schema
 └── tests/
     ├── test_tools.py          # 参数校验、未知字段拒绝、工具执行、JSON Schema 形状
-    └── test_loop.py           # 三个工具各自被正确选中、未知主机报错不崩溃、无工具时直接回答
+    └── test_loop.py           # 三个工具各自被正确选中、未知主机报错不崩溃、无工具时直接回答、
+                                # 未知工具名的五步 trace、model.request 收到完整工具定义
 ```
 
 ## 验证记录（实测输出）
@@ -79,13 +93,19 @@ tool-calling-lab/
 ### `uv run pytest -v`
 
 ```text
-collected 16 items
+collected 18 items
 
-tests\test_loop.py ......                                                [ 37%]
+tests\test_loop.py ........                                              [ 44%]
 tests\test_tools.py ..........                                           [100%]
 
-============================= 16 passed in 1.72s ==============================
+============================= 18 passed in 0.14s ==============================
 ```
+
+> 从 16 -> 18：新增 `test_unknown_tool_produces_five_step_trace_with_dispatch_attempt`
+> （断言未注册工具名的路径仍产生五步 trace，第 3 步记录一次"尝试调度未知工具"）与
+> `test_model_request_receives_full_tool_definitions`（断言 `MockModel.request` 实际收到
+> 的是三份完整的 JSON-Schema 工具定义 —— 包含 name/description/parameters，而不仅仅是一份
+> 工具名字符串列表）。这两个用例对应 Reviewer 报告中的 P1 与 P2 两项发现的修复验证。
 
 ### `uv run tool-calling-lab`（内置 5 个演示问题，逐字实测输出）
 
