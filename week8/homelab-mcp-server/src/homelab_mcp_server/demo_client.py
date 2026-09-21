@@ -4,19 +4,44 @@ from __future__ import annotations
 
 import asyncio
 import json
+import os
 from mcp import ClientSession, StdioServerParameters
-from mcp.client.stdio import stdio_client
+from mcp.client.stdio import get_default_environment, stdio_client
+
+# MCP SDK's stdio_client only inherits a small, fixed allowlist of "safe" env
+# vars by default (PATH, HOME, etc.) -- it does NOT forward custom app env
+# vars like HOMELAB_MODE/OPENWRT_CONFIG_FILE from the parent shell to the
+# spawned server subprocess. Without this, setting $env:HOMELAB_MODE="openwrt"
+# before running this demo would silently have no effect (server always sees
+# the default "mock" mode). Explicitly forward our own app-specific env vars
+# on top of the SDK's safe default set.
+_APP_ENV_VARS = (
+    "HOMELAB_MODE",
+    "OPENWRT_CONFIG_JSON",
+    "OPENWRT_CONFIG_FILE",
+)
+
+
+def _build_server_env() -> dict[str, str]:
+    env = get_default_environment()
+    for key in _APP_ENV_VARS:
+        value = os.environ.get(key)
+        if value is not None:
+            env[key] = value
+    return env
 
 
 async def run_demo() -> None:
+    server_env = _build_server_env()
     server_params = StdioServerParameters(
         command="uv",
         args=["run", "--python", "3.12", "-m", "homelab_mcp_server.server"],
-        env=None,
+        env=server_env,
     )
 
+    mode_label = server_env.get("HOMELAB_MODE", "mock")
     print("=" * 65)
-    print("HomeLab MCP Server Demo Client (Offline Mock Mode)")
+    print(f"HomeLab MCP Server Demo Client (adapter mode: {mode_label})")
     print("=" * 65)
 
     async with stdio_client(server_params) as (read, write):
