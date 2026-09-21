@@ -1,0 +1,5 @@
+{
+  "base_url": "http://homelab-api.example.invalid:8080",
+  "auth_token": "REPLACE_WITH_SECRET",
+  "timeout_seconds": 5.0
+}

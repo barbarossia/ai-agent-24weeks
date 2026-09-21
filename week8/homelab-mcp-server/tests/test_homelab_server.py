@@ -1,7 +1,9 @@
 """Automated tests validating MockAdapter, RealAdapter safety, and MCP Server integration."""
 
 import json
+import httpx
 import pytest
+from pathlib import Path
 from pydantic import ValidationError
 from homelab_mcp_server.models import RealAdapterConfig
 from homelab_mcp_server.mock_adapter import MockAdapter
@@ -69,6 +71,88 @@ def test_real_adapter_ping_unreachable():
     assert result["mode"] == "real"
     assert "error" in result
     adapter.close()
+
+
+def test_real_adapter_default_path_templates():
+    cfg = RealAdapterConfig(base_url="http://homelab.local:8080")
+    assert cfg.inventory_path == "/api/v1/inventory"
+    assert cfg.health_list_path == "/api/v1/health"
+    assert cfg.health_path_template == "/api/v1/health/{target_id}"
+    assert cfg.metrics_path_template == "/api/v1/metrics/{target_id}"
+
+
+def test_real_adapter_path_template_requires_placeholder():
+    with pytest.raises(ValidationError):
+        RealAdapterConfig(base_url="http://homelab.local:8080", health_path_template="/api/v1/health/fixed")
+    with pytest.raises(ValidationError):
+        RealAdapterConfig(base_url="http://homelab.local:8080", metrics_path_template="/api/v1/metrics/fixed")
+
+
+def test_real_adapter_uses_configurable_paths():
+    # Real devices (e.g. OpenWrt) rarely expose the default /api/v1/... REST
+    # shape. Point path templates at whatever real read-only GET endpoint
+    # actually exists (e.g. a small exporter/gateway) and verify the adapter
+    # requests exactly that path -- without any real network I/O, using
+    # httpx.MockTransport to record requested paths.
+    requested_paths = []
+
+    def handler(request):
+        requested_paths.append(request.url.path)
+        if "health" in request.url.path:
+            return httpx.Response(
+                200,
+                json={
+                    "id": "router-openwrt",
+                    "name": "Main Gateway Router",
+                    "status": "healthy",
+                    "last_check_timestamp": "2026-09-21T16:00:00Z",
+                    "details": "mock exporter response",
+                },
+            )
+        return httpx.Response(200, json={"id": "router-openwrt", "name": "Main Gateway Router", "cpu_percent": 1.0})
+
+    cfg = RealAdapterConfig(
+        base_url="http://openwrt.lan",
+        inventory_path="/cgi-bin/exporter/inventory",
+        health_list_path="/cgi-bin/exporter/health",
+        health_path_template="/cgi-bin/exporter/health/{target_id}",
+        metrics_path_template="/cgi-bin/exporter/metrics/{target_id}",
+    )
+    adapter = RealAdapter(config=cfg)
+    adapter._client = httpx.Client(
+        base_url=adapter.base_url,
+        transport=httpx.MockTransport(handler),
+    )
+
+    adapter.get_health(target_id="router-openwrt")
+    adapter.get_metrics("router-openwrt")
+    adapter.get_health()
+    adapter.close()
+
+    assert "/cgi-bin/exporter/health/router-openwrt" in requested_paths
+    assert "/cgi-bin/exporter/metrics/router-openwrt" in requested_paths
+    assert "/cgi-bin/exporter/health" in requested_paths
+
+
+def test_example_config_files_are_valid_real_adapter_config():
+    # examples/*.json must always parse into a valid RealAdapterConfig, so the
+    # documented sample files never silently rot out of sync with the model.
+    repo_root = Path(__file__).resolve().parent.parent
+    examples_dir = repo_root / "examples"
+
+    generic_cfg = RealAdapterConfig.model_validate_json(
+        (examples_dir / "real_adapter_config.example.json").read_text(encoding="utf-8")
+    )
+    assert generic_cfg.base_url.startswith("http://")
+    assert generic_cfg.inventory_path == "/api/v1/inventory"
+
+    openwrt_cfg = RealAdapterConfig.model_validate_json(
+        (examples_dir / "openwrt_config.example.json").read_text(encoding="utf-8")
+    )
+    assert openwrt_cfg.base_url == "http://192.168.1.1"
+    assert openwrt_cfg.inventory_path == "/cgi-bin/exporter/inventory"
+    assert openwrt_cfg.health_path_template == "/cgi-bin/exporter/health/{target_id}"
+    assert openwrt_cfg.metrics_path_template == "/cgi-bin/exporter/metrics/{target_id}"
 
 
 def test_real_adapter_config_validation():

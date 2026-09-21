@@ -96,7 +96,7 @@ class RealAdapter(BaseHomeLabAdapter):
 
     def list_inventory(self, category_filter: Optional[str] = None) -> List[DeviceOrService]:
         params = {"category": category_filter} if category_filter else None
-        data = self._get("/api/v1/inventory", params=params)
+        data = self._get(self.config.inventory_path, params=params)
         if isinstance(data, list):
             return [DeviceOrService.model_validate(item) for item in data]
         if isinstance(data, dict) and "items" in data:
@@ -104,7 +104,11 @@ class RealAdapter(BaseHomeLabAdapter):
         return []
 
     def get_health(self, target_id: Optional[str] = None) -> List[HealthStatus]:
-        path = f"/api/v1/health/{target_id}" if target_id else "/api/v1/health"
+        path = (
+            self.config.health_path_template.format(target_id=target_id)
+            if target_id
+            else self.config.health_list_path
+        )
         data = self._get(path)
         if isinstance(data, list):
             return [HealthStatus.model_validate(item) for item in data]
@@ -116,7 +120,7 @@ class RealAdapter(BaseHomeLabAdapter):
         return []
 
     def get_metrics(self, target_id: str) -> BasicMetrics:
-        data = self._get(f"/api/v1/metrics/{target_id}")
+        data = self._get(self.config.metrics_path_template.format(target_id=target_id))
         if isinstance(data, dict) and "cpu_percent" in data:
             return BasicMetrics.model_validate(data)
         return BasicMetrics(
