@@ -47,6 +47,19 @@ def test_mock_adapter_ping():
     assert result["mode"] == "mock"
 
 
+def test_real_adapter_config_bare_ip_normalization():
+    # A bare IP/host (no scheme) must be auto-normalized to http:// so httpx
+    # does not raise UnsupportedProtocol.
+    cfg = RealAdapterConfig(base_url="192.168.1.1")
+    assert cfg.base_url == "http://192.168.1.1"
+
+    cfg_with_port = RealAdapterConfig(base_url="192.168.1.1:8080")
+    assert cfg_with_port.base_url == "http://192.168.1.1:8080"
+
+    cfg_with_scheme = RealAdapterConfig(base_url="https://192.168.1.1:8443")
+    assert cfg_with_scheme.base_url == "https://192.168.1.1:8443"
+
+
 def test_real_adapter_ping_unreachable():
     # Non-routable/unresolvable host: ping() must not raise, and reports unreachable.
     cfg = RealAdapterConfig(base_url="http://homelab-api.example.invalid:8080", timeout_seconds=0.5)

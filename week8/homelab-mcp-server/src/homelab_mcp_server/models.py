@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class DeviceOrService(BaseModel):
@@ -41,6 +41,19 @@ class RealAdapterConfig(BaseModel):
     base_url: str = Field(..., description="Target HomeLab base URL, e.g. http://192.168.1.100:8080")
     auth_token: Optional[str] = Field(None, description="Optional Bearer authentication token")
     timeout_seconds: float = Field(5.0, ge=0.5, le=60.0, description="HTTP connection timeout in seconds")
+
+    @field_validator("base_url")
+    @classmethod
+    def normalize_base_url(cls, value: str) -> str:
+        """Accept a bare host/IP (e.g. '192.168.1.1' or '192.168.1.1:8080') and
+        auto-prepend 'http://' if no scheme is present, so httpx does not raise
+        UnsupportedProtocol on a plain IP address."""
+        value = value.strip()
+        if not value:
+            raise ValueError("base_url cannot be empty")
+        if "://" not in value:
+            value = f"http://{value}"
+        return value
 
 
 class BaseHomeLabAdapter(ABC):
