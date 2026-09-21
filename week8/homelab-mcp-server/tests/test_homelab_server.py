@@ -40,6 +40,24 @@ def test_mock_adapter_metrics():
     assert metrics.extra_stats.get("running_vms") == 6
 
 
+def test_mock_adapter_ping():
+    adapter = MockAdapter()
+    result = adapter.ping()
+    assert result["reachable"] is True
+    assert result["mode"] == "mock"
+
+
+def test_real_adapter_ping_unreachable():
+    # Non-routable/unresolvable host: ping() must not raise, and reports unreachable.
+    cfg = RealAdapterConfig(base_url="http://homelab-api.example.invalid:8080", timeout_seconds=0.5)
+    adapter = RealAdapter(config=cfg)
+    result = adapter.ping()
+    assert result["reachable"] is False
+    assert result["mode"] == "real"
+    assert "error" in result
+    adapter.close()
+
+
 def test_real_adapter_config_validation():
     # Valid config
     cfg = RealAdapterConfig(base_url="http://homelab.local:8080", timeout_seconds=10.0)

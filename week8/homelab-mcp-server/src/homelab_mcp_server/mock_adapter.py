@@ -10,6 +10,10 @@ from .models import BaseHomeLabAdapter, BasicMetrics, DeviceOrService, HealthSta
 class MockAdapter(BaseHomeLabAdapter):
     """Deterministic, read-only offline adapter with sanitized mock data."""
 
+    def ping(self) -> Dict[str, object]:
+        """Mock adapter is always reachable; no real network I/O occurs."""
+        return {"reachable": True, "mode": "mock", "detail": "offline mock data, no network call performed"}
+
     def __init__(self) -> None:
         self._inventory: Dict[str, DeviceOrService] = {
             "router-openwrt": DeviceOrService(

@@ -47,6 +47,11 @@ class BaseHomeLabAdapter(ABC):
     """Abstract Base Class defining the read-only contract for HomeLab operations."""
 
     @abstractmethod
+    def ping(self) -> Dict[str, Any]:
+        """Check adapter-level connectivity/liveness. Must remain read-only (no side effects)."""
+        pass
+
+    @abstractmethod
     def list_inventory(self, category_filter: Optional[str] = None) -> List[DeviceOrService]:
         """List all discovered devices and services."""
         pass

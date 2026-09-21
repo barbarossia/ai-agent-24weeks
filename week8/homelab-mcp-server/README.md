@@ -21,7 +21,7 @@ Week 8 — HomeLab MCP Server：将私有基础设施能力以 MCP 接口安全�
 | MCP Tool / API | 参数 | 功能描述 | 返回格式 |
 |---|---|---|---|
 | `session.send_ping()` (协议层) | 无 | **真正的 MCP 协议连接存活检测**：发送 `PingRequest`，成功时返回 `EmptyResult`。由官方 MCP SDK 内建支持，无需自定义工具。 | `mcp.types.EmptyResult` |
-| `ping` (应用层工具，可选) | 无 | 应用级自描述状态工具（非协议连通性检查），返回服务名、适配器模式及只读标志 | JSON Object |
+| `ping` (应用层工具，可选) | 无 | 应用级自描述状态工具（非协议连通性检查），内部调用 `adapter.ping()` 执行只读连通性检查（`MockAdapter` 恒为可达；`RealAdapter` 发起一次轻量 GET 请求，不抛出异常，返回可达性布尔值），并返回服务名、适配器模式及只读标志 | JSON Object |
 | `list_devices_and_services` | `category?: string` | 列出设备与服务资产清单（支持按分类过滤） | JSON Array (`DeviceOrService`) |
 | `get_health_status` | `target_id?: string` | 查询指定目标或全局健康状态、可用性及探针时延 | JSON Array (`HealthStatus`) |
 | `get_basic_metrics` | `target_id: string` | 查询目标 CPU、内存、磁盘利用率及网络流量指标 | JSON Object (`BasicMetrics`) |

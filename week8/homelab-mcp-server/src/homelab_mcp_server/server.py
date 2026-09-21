@@ -35,17 +35,21 @@ def ping() -> str:
     For the actual MCP protocol-level connection/liveness check, clients should
     call `ClientSession.send_ping()`, which sends a `PingRequest` and expects
     an `EmptyResult` — this is handled automatically by the MCP SDK and does
-    not require a custom tool. This `ping` tool exists only as an optional,
-    read-only application-level status/self-description helper.
+    not require a custom tool. This `ping` tool additionally exercises the
+    underlying adapter's read-only `ping()` connectivity check (a lightweight
+    GET for `RealAdapter`, a no-op confirmation for `MockAdapter`).
 
     Returns:
-        JSON string confirming server status, adapter mode, and read-only guarantee.
+        JSON string confirming server status, adapter mode, adapter reachability,
+        and read-only guarantee.
     """
     mode = "real" if isinstance(adapter, RealAdapter) else "mock"
+    adapter_ping = adapter.ping()
     return json.dumps({
         "status": "pong",
         "server": "homelab-service-mcp-server",
         "adapter_mode": mode,
+        "adapter_ping": adapter_ping,
         "read_only": True,
     })
 

@@ -72,6 +72,28 @@ class RealAdapter(BaseHomeLabAdapter):
         except httpx.HTTPError as exc:
             return {"error": f"HomeLab HTTP GET failed: {exc.__class__.__name__}: {str(exc)}"}
 
+    def ping(self) -> Dict[str, Any]:
+        """Read-only connectivity check: performs a single lightweight GET against base_url.
+
+        Never raises; reports reachability instead. Does not use `_get()`'s JSON
+        parsing since the root path may not return JSON on every real deployment.
+        """
+        try:
+            resp = self._client.get("/")
+            return {
+                "reachable": True,
+                "mode": "real",
+                "base_url": self.base_url,
+                "status_code": resp.status_code,
+            }
+        except httpx.HTTPError as exc:
+            return {
+                "reachable": False,
+                "mode": "real",
+                "base_url": self.base_url,
+                "error": f"{exc.__class__.__name__}: {str(exc)}",
+            }
+
     def list_inventory(self, category_filter: Optional[str] = None) -> List[DeviceOrService]:
         params = {"category": category_filter} if category_filter else None
         data = self._get("/api/v1/inventory", params=params)
