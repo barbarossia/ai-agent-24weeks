@@ -12,7 +12,7 @@ Week 8 — HomeLab MCP Server：将私有基础设施能力以 MCP 接口安全�
 
 ### 2. 双适配器架构 (Adapter Pattern)
 - **`MockAdapter` (默认)**：提供脱敏、离线的 HomeLab 样例数据（涵盖 OpenWrt、ESXi、Postgres、Nginx、Transmission），无需任何外部网络或真实设备即可完全独立运行并测试。
-- **`RealAdapter`**：标准 HTTP/REST 适配器，仅通过环境变量（`HOMELAB_BASE_URL`, `HOMELAB_AUTH_TOKEN`, `HOMELAB_HTTP_TIMEOUT`）配置，仅发起只读 `GET` 请求。**零凭据硬编码**。
+- **`RealAdapter`**：标准 HTTP/REST 适配器，通过结构化 JSON 规范（`HOMELAB_CONFIG_JSON` 字符串或 `HOMELAB_CONFIG_FILE` 文件路径，由 Pydantic `RealAdapterConfig` 校验字段和类型）配置，仅发起只读 `GET` 请求。**零凭据硬编码，不持久化或打印 Token**。
 
 ---
 
@@ -20,6 +20,7 @@ Week 8 — HomeLab MCP Server：将私有基础设施能力以 MCP 接口安全�
 
 | MCP Tool | 参数 | 功能描述 | 返回格式 |
 |---|---|---|---|
+| `ping` | 无 | 服务端连接性与存活探测（返回状态、适配器模式及只读标志） | JSON Object |
 | `list_devices_and_services` | `category?: string` | 列出设备与服务资产清单（支持按分类过滤） | JSON Array (`DeviceOrService`) |
 | `get_health_status` | `target_id?: string` | 查询指定目标或全局健康状态、可用性及探针时延 | JSON Array (`HealthStatus`) |
 | `get_basic_metrics` | `target_id: string` | 查询目标 CPU、内存、磁盘利用率及网络流量指标 | JSON Object (`BasicMetrics`) |

@@ -1,16 +1,21 @@
 """homelab_mcp_server package."""
 
-from .models import BaseHomeLabAdapter, DeviceOrService, HealthStatus, BasicMetrics
+from .models import (
+    BaseHomeLabAdapter,
+    BasicMetrics,
+    DeviceOrService,
+    HealthStatus,
+    RealAdapterConfig,
+)
 from .mock_adapter import MockAdapter
 from .real_adapter import RealAdapter
-from .server import mcp
 
 __all__ = [
     "BaseHomeLabAdapter",
     "DeviceOrService",
     "HealthStatus",
     "BasicMetrics",
+    "RealAdapterConfig",
     "MockAdapter",
     "RealAdapter",
-    "mcp",
 ]

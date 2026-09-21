@@ -29,6 +29,22 @@ adapter: BaseHomeLabAdapter = get_adapter()
 # ============================================================================
 
 @mcp.tool()
+def ping() -> str:
+    """Check connectivity and liveness of the HomeLab MCP Server.
+
+    Returns:
+        JSON string confirming server status, adapter mode, and protocol readiness.
+    """
+    mode = "real" if isinstance(adapter, RealAdapter) else "mock"
+    return json.dumps({
+        "status": "pong",
+        "server": "homelab-service-mcp-server",
+        "adapter_mode": mode,
+        "read_only": True,
+    })
+
+
+@mcp.tool()
 def list_devices_and_services(category: Optional[str] = None) -> str:
     """List homelab devices and services in inventory.
 

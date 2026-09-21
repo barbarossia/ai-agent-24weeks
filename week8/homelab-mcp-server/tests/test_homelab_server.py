@@ -1,6 +1,9 @@
 """Automated tests validating MockAdapter, RealAdapter safety, and MCP Server integration."""
 
+import json
 import pytest
+from pydantic import ValidationError
+from homelab_mcp_server.models import RealAdapterConfig
 from homelab_mcp_server.mock_adapter import MockAdapter
 from homelab_mcp_server.real_adapter import RealAdapter
 
@@ -37,13 +40,47 @@ def test_mock_adapter_metrics():
     assert metrics.extra_stats.get("running_vms") == 6
 
 
-def test_real_adapter_requires_base_url():
-    with pytest.raises(ValueError, match="HOMELAB_BASE_URL must be configured"):
-        RealAdapter(base_url="")
+def test_real_adapter_config_validation():
+    # Valid config
+    cfg = RealAdapterConfig(base_url="http://homelab.local:8080", timeout_seconds=10.0)
+    assert cfg.base_url == "http://homelab.local:8080"
+    assert cfg.timeout_seconds == 10.0
+
+    # Missing base_url
+    with pytest.raises(ValidationError):
+        RealAdapterConfig.model_validate_json('{"timeout_seconds": 5}')
+
+
+def test_real_adapter_json_configuration(monkeypatch, tmp_path):
+    # 1. Config via config_json
+    json_str = json.dumps({"base_url": "http://homelab.local:8080", "auth_token": "token123", "timeout_seconds": 3.0})
+    adapter1 = RealAdapter(config_json=json_str)
+    assert adapter1.base_url == "http://homelab.local:8080"
+    assert adapter1.config.timeout_seconds == 3.0
+    adapter1.close()
+
+    # 2. Config via config_file
+    cfg_file = tmp_path / "homelab_config.json"
+    cfg_file.write_text(json_str, encoding="utf-8")
+    adapter2 = RealAdapter(config_file=str(cfg_file))
+    assert adapter2.base_url == "http://homelab.local:8080"
+    adapter2.close()
+
+    # 3. Config via env HOMELAB_CONFIG_JSON
+    monkeypatch.setenv("HOMELAB_CONFIG_JSON", json_str)
+    adapter3 = RealAdapter()
+    assert adapter3.base_url == "http://homelab.local:8080"
+    adapter3.close()
+
+    # 4. Error when unconfigured
+    monkeypatch.delenv("HOMELAB_CONFIG_JSON", raising=False)
+    with pytest.raises(ValueError, match="RealAdapter requires JSON-backed configuration"):
+        RealAdapter()
 
 
 def test_real_adapter_read_only_safety():
-    adapter = RealAdapter(base_url="http://mock-homelab.internal:8080", auth_token="dummy")
+    cfg = RealAdapterConfig(base_url="http://mock-homelab.internal:8080", auth_token="dummy")
+    adapter = RealAdapter(config=cfg)
     # Verify no mutating methods exist on adapter
     assert not hasattr(adapter, "post")
     assert not hasattr(adapter, "delete")

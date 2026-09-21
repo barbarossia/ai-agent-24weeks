@@ -36,6 +36,13 @@ class BasicMetrics(BaseModel):
     extra_stats: Dict[str, Any] = Field(default_factory=dict)
 
 
+class RealAdapterConfig(BaseModel):
+    """Validated JSON configuration for RealAdapter."""
+    base_url: str = Field(..., description="Target HomeLab base URL, e.g. http://192.168.1.100:8080")
+    auth_token: Optional[str] = Field(None, description="Optional Bearer authentication token")
+    timeout_seconds: float = Field(5.0, ge=0.5, le=60.0, description="HTTP connection timeout in seconds")
+
+
 class BaseHomeLabAdapter(ABC):
     """Abstract Base Class defining the read-only contract for HomeLab operations."""
 

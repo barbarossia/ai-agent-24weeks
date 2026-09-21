@@ -1,9 +1,9 @@
 """RealAdapter providing strictly read-only HTTP/REST integration for real HomeLab.
 
 Configuration:
-- Environment variable `HOMELAB_BASE_URL` (e.g., http://homelab-api.local:8080)
-- Environment variable `HOMELAB_AUTH_TOKEN` (Bearer token or API key)
-- Environment variable `HOMELAB_HTTP_TIMEOUT` (seconds, default 5.0)
+- JSON string via environment variable HOMELAB_CONFIG_JSON
+- Path to JSON configuration file via HOMELAB_CONFIG_FILE
+- Or by passing RealAdapterConfig directly to RealAdapter(config=...)
 
 Safety Constraints:
 - Only performs HTTP GET requests.
@@ -13,10 +13,12 @@ Safety Constraints:
 
 from __future__ import annotations
 
+import json
 import os
+from pathlib import Path
 from typing import Any, Dict, List, Optional
 import httpx
-from .models import BaseHomeLabAdapter, BasicMetrics, DeviceOrService, HealthStatus
+from .models import BaseHomeLabAdapter, BasicMetrics, DeviceOrService, HealthStatus, RealAdapterConfig
 
 
 class RealAdapter(BaseHomeLabAdapter):
@@ -24,28 +26,40 @@ class RealAdapter(BaseHomeLabAdapter):
 
     def __init__(
         self,
-        base_url: Optional[str] = None,
-        auth_token: Optional[str] = None,
-        timeout: Optional[float] = None,
+        config: Optional[RealAdapterConfig] = None,
+        config_json: Optional[str] = None,
+        config_file: Optional[str] = None,
     ) -> None:
-        self.base_url = (base_url or os.getenv("HOMELAB_BASE_URL", "")).rstrip("/")
-        self.auth_token = auth_token or os.getenv("HOMELAB_AUTH_TOKEN", "")
-        self.timeout = timeout or float(os.getenv("HOMELAB_HTTP_TIMEOUT", "5.0"))
-
-        if not self.base_url:
+        if config is not None:
+            self.config = config
+        elif config_json is not None:
+            self.config = RealAdapterConfig.model_validate_json(config_json)
+        elif config_file is not None:
+            raw_text = Path(config_file).read_text(encoding="utf-8")
+            self.config = RealAdapterConfig.model_validate_json(raw_text)
+        elif "HOMELAB_CONFIG_JSON" in os.environ:
+            self.config = RealAdapterConfig.model_validate_json(os.environ["HOMELAB_CONFIG_JSON"])
+        elif "HOMELAB_CONFIG_FILE" in os.environ:
+            raw_text = Path(os.environ["HOMELAB_CONFIG_FILE"]).read_text(encoding="utf-8")
+            self.config = RealAdapterConfig.model_validate_json(raw_text)
+        else:
             raise ValueError(
-                "HOMELAB_BASE_URL must be configured when using RealAdapter. "
-                "Set the environment variable or pass base_url explicitly."
+                "RealAdapter requires JSON-backed configuration. Provide RealAdapterConfig, "
+                "or set HOMELAB_CONFIG_JSON or HOMELAB_CONFIG_FILE."
             )
 
+        self.base_url = self.config.base_url.rstrip("/")
+        if not self.base_url:
+            raise ValueError("RealAdapterConfig 'base_url' cannot be empty.")
+
         headers = {"Accept": "application/json"}
-        if self.auth_token:
-            headers["Authorization"] = f"Bearer {self.auth_token}"
+        if self.config.auth_token:
+            headers["Authorization"] = f"Bearer {self.config.auth_token}"
 
         self._client = httpx.Client(
             base_url=self.base_url,
             headers=headers,
-            timeout=self.timeout,
+            timeout=self.config.timeout_seconds,
             follow_redirects=False,
         )
 
