@@ -18,12 +18,52 @@ Week 8 — HomeLab MCP Server：将私有基础设施能力以 MCP 接口安全�
 
 ## MCP 工具清单
 
-| MCP Tool | 参数 | 功能描述 | 返回格式 |
+| MCP Tool / API | 参数 | 功能描述 | 返回格式 |
 |---|---|---|---|
-| `ping` | 无 | 服务端连接性与存活探测（返回状态、适配器模式及只读标志） | JSON Object |
+| `session.send_ping()` (协议层) | 无 | **真正的 MCP 协议连接存活检测**：发送 `PingRequest`，成功时返回 `EmptyResult`。由官方 MCP SDK 内建支持，无需自定义工具。 | `mcp.types.EmptyResult` |
+| `ping` (应用层工具，可选) | 无 | 应用级自描述状态工具（非协议连通性检查），返回服务名、适配器模式及只读标志 | JSON Object |
 | `list_devices_and_services` | `category?: string` | 列出设备与服务资产清单（支持按分类过滤） | JSON Array (`DeviceOrService`) |
 | `get_health_status` | `target_id?: string` | 查询指定目标或全局健康状态、可用性及探针时延 | JSON Array (`HealthStatus`) |
 | `get_basic_metrics` | `target_id: string` | 查询目标 CPU、内存、磁盘利用率及网络流量指标 | JSON Object (`BasicMetrics`) |
+
+> **注意**：`ping` MCP Tool 是一个可选的应用层状态自描述工具，**不是** MCP 协议本身的连接性检查。
+> 真正的"服务端连接探活"应使用官方 SDK 提供的 `ClientSession.send_ping()`（发送 `PingRequest`，
+> 成功时返回 `EmptyResult`），`demo_client.py` 与集成测试均先执行该协议级 ping，再调用四个业务工具。
+
+---
+
+## RealAdapter JSON 配置示例
+
+`RealAdapter` 通过结构化 JSON 配置，而非零散的环境变量。支持三种输入方式（互斥，按以下优先级）：
+
+1. 直接传入 `RealAdapterConfig` 实例（编程调用场景）；
+2. 环境变量 `HOMELAB_CONFIG_JSON`：JSON 字符串；
+3. 环境变量 `HOMELAB_CONFIG_FILE`：指向 JSON 配置文件的路径。
+
+JSON 结构（字段由 Pydantic `RealAdapterConfig` 校验）：
+
+```json
+{
+  "base_url": "http://homelab-api.example.invalid:8080",
+  "auth_token": "REPLACE_WITH_SECRET",
+  "timeout_seconds": 5.0
+}
+```
+
+- `base_url`（必填）：真实 HomeLab REST 接口的基础地址。
+- `auth_token`（可选）：Bearer Token，仅在内存中用于构造请求头，不打印、不持久化。
+- `timeout_seconds`（可选，默认 `5.0`，范围 `0.5–60.0`）：HTTP 请求超时时间。
+
+示例（Python，仅用于本地开发；本仓库不包含真实凭据或真实地址）：
+
+```python
+from homelab_mcp_server.real_adapter import RealAdapter
+
+adapter = RealAdapter(config_json='{"base_url": "http://homelab-api.example.invalid:8080", "auth_token": "REPLACE_WITH_SECRET", "timeout_seconds": 5.0}')
+```
+
+> **安全边界**：以上仅为占位符示例，`base_url` 使用 `.invalid` 保留域名、`auth_token` 为占位字符串。
+> 连接或部署到真实 HomeLab 需要显式通过 Human Gate 确认，本仓库默认不启用、不测试真实连接。
 
 ---
 

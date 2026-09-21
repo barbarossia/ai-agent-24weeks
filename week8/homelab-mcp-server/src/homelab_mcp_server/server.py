@@ -30,10 +30,16 @@ adapter: BaseHomeLabAdapter = get_adapter()
 
 @mcp.tool()
 def ping() -> str:
-    """Check connectivity and liveness of the HomeLab MCP Server.
+    """Application-level status tool (NOT the MCP protocol connectivity check).
+
+    For the actual MCP protocol-level connection/liveness check, clients should
+    call `ClientSession.send_ping()`, which sends a `PingRequest` and expects
+    an `EmptyResult` — this is handled automatically by the MCP SDK and does
+    not require a custom tool. This `ping` tool exists only as an optional,
+    read-only application-level status/self-description helper.
 
     Returns:
-        JSON string confirming server status, adapter mode, and protocol readiness.
+        JSON string confirming server status, adapter mode, and read-only guarantee.
     """
     mode = "real" if isinstance(adapter, RealAdapter) else "mock"
     return json.dumps({

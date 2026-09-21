@@ -30,26 +30,31 @@ async def run_demo() -> None:
             tool_names = [t.name for t in tools.tools]
             print(f"\n[2] Available Tools: {tool_names}")
 
-            # 3. Connection ping
-            print("\n[3] Calling ping()...")
+            # 3. MCP protocol-level connection liveness check
+            print("\n[3] Calling session.send_ping() (MCP protocol ping)...")
+            await session.send_ping()
+            print("Result: protocol ping succeeded (EmptyResult received)")
+
+            # 4. Application-level status tool (optional, custom, not the protocol ping)
+            print("\n[4] Calling application tool ping()...")
             ping_res = await session.call_tool("ping", arguments={})
             ping_text = "".join(c.text for c in ping_res.content if hasattr(c, "text"))
             print(f"Result:\n{ping_text}")
 
-            # 4. Call list_devices_and_services
-            print("\n[4] Calling list_devices_and_services(category='database')...")
+            # 5. Call list_devices_and_services
+            print("\n[5] Calling list_devices_and_services(category='database')...")
             inv_res = await session.call_tool("list_devices_and_services", arguments={"category": "database"})
             inv_text = "".join(c.text for c in inv_res.content if hasattr(c, "text"))
             print(f"Result:\n{inv_text}")
 
-            # 5. Call get_health_status
-            print("\n[5] Calling get_health_status(target_id='hypervisor-esxi')...")
+            # 6. Call get_health_status
+            print("\n[6] Calling get_health_status(target_id='hypervisor-esxi')...")
             health_res = await session.call_tool("get_health_status", arguments={"target_id": "hypervisor-esxi"})
             health_text = "".join(c.text for c in health_res.content if hasattr(c, "text"))
             print(f"Result:\n{health_text}")
 
-            # 6. Call get_basic_metrics
-            print("\n[6] Calling get_basic_metrics(target_id='hypervisor-esxi')...")
+            # 7. Call get_basic_metrics
+            print("\n[7] Calling get_basic_metrics(target_id='hypervisor-esxi')...")
             metrics_res = await session.call_tool("get_basic_metrics", arguments={"target_id": "hypervisor-esxi"})
             metrics_text = "".join(c.text for c in metrics_res.content if hasattr(c, "text"))
             print(f"Result:\n{metrics_text}")
