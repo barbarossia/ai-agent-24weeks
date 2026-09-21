@@ -1,0 +1,6 @@
+{
+  "base_url": "192.168.1.1",
+  "username": "root",
+  "password": "REPLACE_WITH_YOUR_OPENWRT_PASSWORD",
+  "timeout_seconds": 5.0
+}
