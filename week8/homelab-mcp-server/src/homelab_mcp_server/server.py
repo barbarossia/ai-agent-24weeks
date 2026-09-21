@@ -4,18 +4,32 @@ from __future__ import annotations
 
 import json
 import os
+from pathlib import Path
 from typing import Optional
 from mcp.server.fastmcp import FastMCP
 
-from .models import BaseHomeLabAdapter
+from .models import BaseHomeLabAdapter, OpenWrtAdapterConfig
 from .mock_adapter import MockAdapter
 from .real_adapter import RealAdapter
+from .openwrt_adapter import OpenWrtAdapter
 
 # Factory function to instantiate adapter based on environment variable
 def get_adapter() -> BaseHomeLabAdapter:
     mode = os.getenv("HOMELAB_MODE", "mock").lower()
     if mode == "real":
         return RealAdapter()
+    if mode == "openwrt":
+        if "OPENWRT_CONFIG_JSON" in os.environ:
+            cfg = OpenWrtAdapterConfig.model_validate_json(os.environ["OPENWRT_CONFIG_JSON"])
+        elif "OPENWRT_CONFIG_FILE" in os.environ:
+            raw_text = Path(os.environ["OPENWRT_CONFIG_FILE"]).read_text(encoding="utf-8")
+            cfg = OpenWrtAdapterConfig.model_validate_json(raw_text)
+        else:
+            raise ValueError(
+                "HOMELAB_MODE=openwrt requires OPENWRT_CONFIG_JSON or OPENWRT_CONFIG_FILE "
+                "to be set (JSON-backed OpenWrtAdapterConfig)."
+            )
+        return OpenWrtAdapter(cfg)
     return MockAdapter()
 
 
@@ -37,13 +51,19 @@ def ping() -> str:
     an `EmptyResult` — this is handled automatically by the MCP SDK and does
     not require a custom tool. This `ping` tool additionally exercises the
     underlying adapter's read-only `ping()` connectivity check (a lightweight
-    GET for `RealAdapter`, a no-op confirmation for `MockAdapter`).
+    GET for `RealAdapter`, a real ubus session login for `OpenWrtAdapter`, a
+    no-op confirmation for `MockAdapter`).
 
     Returns:
         JSON string confirming server status, adapter mode, adapter reachability,
         and read-only guarantee.
     """
-    mode = "real" if isinstance(adapter, RealAdapter) else "mock"
+    if isinstance(adapter, RealAdapter):
+        mode = "real"
+    elif isinstance(adapter, OpenWrtAdapter):
+        mode = "openwrt"
+    else:
+        mode = "mock"
     adapter_ping = adapter.ping()
     return json.dumps({
         "status": "pong",

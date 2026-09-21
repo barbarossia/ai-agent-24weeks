@@ -134,9 +134,9 @@ def test_real_adapter_uses_configurable_paths():
     assert "/cgi-bin/exporter/health" in requested_paths
 
 
-def test_example_config_files_are_valid_real_adapter_config():
-    # examples/*.json must always parse into a valid RealAdapterConfig, so the
-    # documented sample files never silently rot out of sync with the model.
+def test_example_config_files_are_valid():
+    # examples/*.json must always parse into their respective config models,
+    # so the documented sample files never silently rot out of sync.
     repo_root = Path(__file__).resolve().parent.parent
     examples_dir = repo_root / "examples"
 
@@ -146,13 +146,13 @@ def test_example_config_files_are_valid_real_adapter_config():
     assert generic_cfg.base_url.startswith("http://")
     assert generic_cfg.inventory_path == "/api/v1/inventory"
 
-    openwrt_cfg = RealAdapterConfig.model_validate_json(
+    from homelab_mcp_server.models import OpenWrtAdapterConfig
+
+    openwrt_cfg = OpenWrtAdapterConfig.model_validate_json(
         (examples_dir / "openwrt_config.example.json").read_text(encoding="utf-8")
     )
     assert openwrt_cfg.base_url == "http://192.168.1.1"
-    assert openwrt_cfg.inventory_path == "/cgi-bin/exporter/inventory"
-    assert openwrt_cfg.health_path_template == "/cgi-bin/exporter/health/{target_id}"
-    assert openwrt_cfg.metrics_path_template == "/cgi-bin/exporter/metrics/{target_id}"
+    assert openwrt_cfg.username == "root"
 
 
 def test_real_adapter_config_validation():

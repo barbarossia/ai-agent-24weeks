@@ -89,6 +89,32 @@ class RealAdapterConfig(BaseModel):
         return value
 
 
+class OpenWrtAdapterConfig(BaseModel):
+    """Validated JSON configuration for OpenWrtUbusAdapter.
+
+    Targets OpenWrt's real, native management interface: ubus-over-HTTP
+    (the '/ubus' JSON-RPC 2.0 endpoint used by LuCI itself), not a fictional
+    REST API. Requires a session login (ubus 'session'/'login' call) before
+    any other ubus call can be made.
+    """
+    base_url: str = Field(..., description="OpenWrt base URL, e.g. http://192.168.1.1")
+    username: str = Field("root", description="OpenWrt/LuCI username for ubus session login")
+    password: str = Field(..., description="OpenWrt/LuCI password for ubus session login")
+    timeout_seconds: float = Field(5.0, ge=0.5, le=60.0, description="HTTP connection timeout in seconds")
+
+    @field_validator("base_url")
+    @classmethod
+    def normalize_base_url(cls, value: str) -> str:
+        """Accept a bare host/IP (e.g. '192.168.1.1') and auto-prepend 'http://'
+        if no scheme is present, so httpx does not raise UnsupportedProtocol."""
+        value = value.strip()
+        if not value:
+            raise ValueError("base_url cannot be empty")
+        if "://" not in value:
+            value = f"http://{value}"
+        return value
+
+
 class BaseHomeLabAdapter(ABC):
     """Abstract Base Class defining the read-only contract for HomeLab operations."""
 

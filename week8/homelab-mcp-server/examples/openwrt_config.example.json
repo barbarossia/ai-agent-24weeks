@@ -1,9 +1,6 @@
 {
   "base_url": "192.168.1.1",
-  "auth_token": null,
-  "timeout_seconds": 5.0,
-  "inventory_path": "/cgi-bin/exporter/inventory",
-  "health_list_path": "/cgi-bin/exporter/health",
-  "health_path_template": "/cgi-bin/exporter/health/{target_id}",
-  "metrics_path_template": "/cgi-bin/exporter/metrics/{target_id}"
+  "username": "root",
+  "password": "REPLACE_WITH_YOUR_OPENWRT_PASSWORD",
+  "timeout_seconds": 5.0
 }

@@ -1,60 +1,66 @@
-# RealAdapter Configuration Examples
+# Configuration Examples
 
-These are sanitized, placeholder JSON examples for `RealAdapterConfig`.
-None of them contain real credentials or real HomeLab addresses. They are
-for local development/reference only; real connectivity requires an explicit
-human-gated decision to point `HOMELAB_MODE=real` at your own infrastructure.
+These are sanitized, placeholder JSON examples. None of them contain real
+credentials or real HomeLab addresses. They are for local development/
+reference only; real connectivity requires an explicit human-gated decision
+to point `HOMELAB_MODE=real` or `HOMELAB_MODE=openwrt` at your own
+infrastructure.
 
-## `real_adapter_config.example.json`
+## `real_adapter_config.example.json` — generic REST exporter/gateway
 
-Generic example using the default REST path templates
-(`/api/v1/inventory`, `/api/v1/health[/{target_id}]`, `/api/v1/metrics/{target_id}`).
-Use this if your real backend already exposes a unified REST API in that shape
-(e.g. a custom monitoring service or gateway you control).
+Use `RealAdapter` (`HOMELAB_MODE=real`) if your real backend already exposes
+a unified, read-only GET REST API in the default shape
+(`/api/v1/inventory`, `/api/v1/health[/{target_id}]`, `/api/v1/metrics/{target_id}`),
+or you have deployed your own exporter/gateway script that does. All paths
+are configurable via `RealAdapterConfig`'s `inventory_path`/`health_list_path`/
+`health_path_template`/`metrics_path_template` fields if your exporter uses
+different routes.
 
-```bash
+```powershell
 $env:HOMELAB_MODE = "real"
 $env:HOMELAB_CONFIG_FILE = ".\examples\real_adapter_config.example.json"
 uv run homelab-mcp-demo
 ```
 
-## `openwrt_config.example.json`
+## `openwrt_config.example.json` — real OpenWrt router via ubus-over-HTTP
 
-Example targeting a bare IP (`192.168.1.1`, auto-normalized to `http://192.168.1.1`)
-with custom path templates, for the realistic case where a device like OpenWrt
-does **not** natively expose `/api/v1/...` REST endpoints.
+Use `OpenWrtAdapter` (`HOMELAB_MODE=openwrt`) to connect to an **actual**
+OpenWrt router. This is a genuine implementation of OpenWrt's real, native
+management protocol — **ubus-over-HTTP**, the same `/ubus` JSON-RPC 2.0
+endpoint that LuCI itself uses — not a fictional REST API.
 
-OpenWrt's native status interface is **ubus-over-HTTP** (`/ubus`, JSON-RPC 2.0),
-which requires a session-authenticated `POST` login followed by `POST` calls
-(e.g. `ubus call system board`, `ubus call system info`). That POST/JSON-RPC
-flow is intentionally **not implemented** in this project, because it conflicts
-with the strict read-only, GET-only security boundary that was reviewed and
-approved for this HomeLab MCP Server.
+Protocol flow implemented by `OpenWrtAdapter`:
 
-> ⚠️ **`/cgi-bin/exporter/...` is NOT a real OpenWrt path.** It is a fictional
-> placeholder representing "assume you wrote and deployed your own exporter
-> script at this path." OpenWrt does **not** ship with any `/api/v1/...` or
-> `/cgi-bin/exporter/...`-style read-only REST/GET API out of the box. To
-> actually connect this project to a real OpenWrt router, you must write and
-> deploy that exporter script yourself (it internally converts to ubus
-> POST/JSON-RPC calls, and only exposes GET routes externally), then update
-> these fields to match your exporter's real routes.
+1. `POST /ubus` with ubus method `session.login` (anonymous session id
+   `00000000000000000000000000000000`, plus `username`/`password`) to obtain
+   a `ubus_rpc_session` id.
+2. `POST /ubus` with the session id for each subsequent read-only call:
+   `system.board` (device/hostname info), `system.info` (uptime, load,
+   memory), `network.interface.dump` (interface list + up/down status),
+   `network.device.status` (per-interface traffic counters).
 
-To connect this project to a real OpenWrt router (or any similar device) while
-preserving that GET-only boundary, deploy your own small read-only exporter/
-gateway script on or near the device — it internally performs whatever
-POST/JSON-RPC calls are needed against ubus, and exposes only simple GET
-endpoints externally. Then point the `*_path`/`*_path_template` fields at that
-exporter's routes, as shown in this example (`/cgi-bin/exporter/...` is a
-placeholder path — replace it with your exporter's actual routes).
+Only this fixed set of read-only ubus calls is ever issued — see the
+`_ALLOWED_UBUS_CALLS` allowlist in `openwrt_adapter.py`. No mutating ubus
+calls (reboot, interface up/down, config commit, etc.) are implemented or
+reachable. This does use HTTP `POST` at the transport level (ubus requires
+it — OpenWrt has no GET-based equivalent), which is a deliberate, narrow,
+allowlisted exception to this project's general GET-only default, documented
+and scoped to exactly these 5 read-only ubus operations.
 
-```bash
-$env:HOMELAB_MODE = "real"
-$env:HOMELAB_CONFIG_FILE = ".\examples\openwrt_config.example.json"
+```powershell
+$env:HOMELAB_MODE = "openwrt"
+$env:OPENWRT_CONFIG_FILE = ".\examples\openwrt_config.example.json"
 uv run homelab-mcp-demo
 ```
 
-> **Security boundary**: This repository never issues HTTP `POST`/mutating
-> requests, and does not implement ubus/JSON-RPC. Deploying and securing any
-> exporter/gateway in front of a real device is entirely your own
-> responsibility and is out of scope for this repository.
+Requires ubus/rpcd HTTP access enabled on the router (enabled by default on
+stock OpenWrt/LuCI installs) and valid `username`/`password` credentials for
+a user allowed to call the object/methods above per `/usr/share/rpcd/acl.d/`.
+
+> **Security boundary**: `OpenWrtAdapter` only ever calls the 5 allowlisted
+> read-only ubus methods above; it never calls any mutating ubus method.
+> Credentials are read from this JSON config only in memory, never logged or
+> persisted, and the ubus session id is cached only for the adapter's
+> lifetime. Placeholder credentials in this example file must be replaced
+> with your own before use; do not commit real credentials to this
+> repository.
