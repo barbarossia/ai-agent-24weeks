@@ -1,0 +1,31 @@
+[project]
+name = "agent-patterns-lab"
+version = "0.1.0"
+description = "Week 6 - Agent Patterns: 4 common agent architectures (Single Tool, Pipeline, Router, Supervisor-Worker) in pure Python"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "barbarossia" }]
+dependencies = []
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<10",
+]
+
+[project.scripts]
+agent-patterns-lab = "agent_patterns_lab.cli:main"
+pattern-single = "agent_patterns_lab.pattern1_single_tool:main"
+pattern-pipeline = "agent_patterns_lab.pattern2_pipeline:main"
+pattern-router = "agent_patterns_lab.pattern3_router:main"
+pattern-supervisor = "agent_patterns_lab.pattern4_supervisor:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/agent_patterns_lab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
