@@ -10,14 +10,11 @@ from mcp.server.fastmcp import FastMCP
 
 from .models import BaseHomeLabAdapter, OpenWrtAdapterConfig
 from .mock_adapter import MockAdapter
-from .real_adapter import RealAdapter
 from .openwrt_adapter import OpenWrtAdapter
 
 # Factory function to instantiate adapter based on environment variable
 def get_adapter() -> BaseHomeLabAdapter:
     mode = os.getenv("HOMELAB_MODE", "mock").lower()
-    if mode == "real":
-        return RealAdapter()
     if mode == "openwrt":
         if "OPENWRT_CONFIG_JSON" in os.environ:
             cfg = OpenWrtAdapterConfig.model_validate_json(os.environ["OPENWRT_CONFIG_JSON"])
@@ -50,17 +47,15 @@ def ping() -> str:
     call `ClientSession.send_ping()`, which sends a `PingRequest` and expects
     an `EmptyResult` — this is handled automatically by the MCP SDK and does
     not require a custom tool. This `ping` tool additionally exercises the
-    underlying adapter's read-only `ping()` connectivity check (a lightweight
-    GET for `RealAdapter`, a real ubus session login for `OpenWrtAdapter`, a
-    no-op confirmation for `MockAdapter`).
+    underlying adapter's read-only `ping()` connectivity check (a real ubus
+    session login for `OpenWrtAdapter`, a no-op confirmation for
+    `MockAdapter`).
 
     Returns:
         JSON string confirming server status, adapter mode, adapter reachability,
         and read-only guarantee.
     """
-    if isinstance(adapter, RealAdapter):
-        mode = "real"
-    elif isinstance(adapter, OpenWrtAdapter):
+    if isinstance(adapter, OpenWrtAdapter):
         mode = "openwrt"
     else:
         mode = "mock"

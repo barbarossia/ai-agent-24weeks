@@ -1,26 +1,9 @@
 # Configuration Examples
 
-These are sanitized, placeholder JSON examples. None of them contain real
-credentials or real HomeLab addresses. They are for local development/
-reference only; real connectivity requires an explicit human-gated decision
-to point `HOMELAB_MODE=real` or `HOMELAB_MODE=openwrt` at your own
-infrastructure.
-
-## `real_adapter_config.example.json` — generic REST exporter/gateway
-
-Use `RealAdapter` (`HOMELAB_MODE=real`) if your real backend already exposes
-a unified, read-only GET REST API in the default shape
-(`/api/v1/inventory`, `/api/v1/health[/{target_id}]`, `/api/v1/metrics/{target_id}`),
-or you have deployed your own exporter/gateway script that does. All paths
-are configurable via `RealAdapterConfig`'s `inventory_path`/`health_list_path`/
-`health_path_template`/`metrics_path_template` fields if your exporter uses
-different routes.
-
-```powershell
-$env:HOMELAB_MODE = "real"
-$env:HOMELAB_CONFIG_FILE = ".\examples\real_adapter_config.example.json"
-uv run homelab-mcp-demo
-```
+This is a sanitized, placeholder JSON example. It does not contain real
+credentials or a real HomeLab address. It is for local development/reference
+only; real connectivity requires an explicit human-gated decision to point
+`HOMELAB_MODE=openwrt` at your own infrastructure.
 
 ## `openwrt_config.example.json` — real OpenWrt router via ubus-over-HTTP
 

@@ -5,17 +5,17 @@ from .models import (
     BasicMetrics,
     DeviceOrService,
     HealthStatus,
-    RealAdapterConfig,
+    OpenWrtAdapterConfig,
 )
 from .mock_adapter import MockAdapter
-from .real_adapter import RealAdapter
+from .openwrt_adapter import OpenWrtAdapter
 
 __all__ = [
     "BaseHomeLabAdapter",
     "DeviceOrService",
     "HealthStatus",
     "BasicMetrics",
-    "RealAdapterConfig",
+    "OpenWrtAdapterConfig",
     "MockAdapter",
-    "RealAdapter",
+    "OpenWrtAdapter",
 ]
