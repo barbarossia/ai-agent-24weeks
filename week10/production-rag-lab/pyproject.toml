@@ -1,0 +1,34 @@
+[project]
+name = "production-rag-lab"
+version = "0.1.0"
+description = "Week 10 - Production RAG Lab: Vector vs BM25 vs Hybrid(RRF) retrieval with document-level Hit@k evaluation"
+readme = "README.md"
+requires-python = ">=3.12"
+authors = [{ name = "barbarossia" }]
+dependencies = [
+    # Week 9 lab is reused as an editable local path dependency.
+    # Week 9 files are read-only for this project; pydantic comes transitively.
+    "vector-search-lab",
+]
+
+[project.scripts]
+production-rag-lab = "production_rag_lab.cli:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8,<10",
+]
+
+[tool.uv.sources]
+vector-search-lab = { path = "../../week9/vector-search-lab", editable = true }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/production_rag_lab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

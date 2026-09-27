@@ -1,0 +1,24 @@
+{"query_id":"q01","query":"How does ubus-over-HTTP expose the JSON-RPC endpoint?","gold_doc_ids":["openwrt_ubus_guide.md"],"notes":"/ubus and rpcd overview"}
+{"query_id":"q02","query":"OpenWrt 获取路由器型号、内核版本和固件信息用什么接口？","gold_doc_ids":["openwrt_ubus_guide.md"],"notes":"system.board"}
+{"query_id":"q03","query":"ubus session.login 返回什么会话标识？","gold_doc_ids":["openwrt_ubus_guide.md"],"notes":"ubus_rpc_session"}
+{"query_id":"q04","query":"Which API reports uptime, load average, and free memory?","gold_doc_ids":["openwrt_ubus_guide.md"],"notes":"system.info"}
+{"query_id":"q05","query":"network.interface.dump 查询哪些接口信息？","gold_doc_ids":["openwrt_ubus_guide.md"],"notes":"interface status, IP, gateway"}
+{"query_id":"q06","query":"How should clients handle ubus error -32002?","gold_doc_ids":["openwrt_ubus_guide.md"],"notes":"expired session/access denied"}
+{"query_id":"q07","query":"OpenWrt wan 到 lan 的端口映射如何写 DNAT redirect？","gold_doc_ids":["openwrt_firewall_setup.md"],"notes":"UCI redirect example"}
+{"query_id":"q08","query":"What are the default inbound policies for lan and wan zones?","gold_doc_ids":["openwrt_firewall_setup.md"],"notes":"zone policies"}
+{"query_id":"q09","query":"外网端口 8080 转发到内网服务器 192.168.1.50:80 要配置哪些字段？","gold_doc_ids":["openwrt_firewall_setup.md"],"notes":"DNAT config fields"}
+{"query_id":"q10","query":"How do I verify packets are hitting OpenWrt firewall rules?","gold_doc_ids":["openwrt_firewall_setup.md"],"notes":"nft list ruleset / iptables counters"}
+{"query_id":"q11","query":"NAT loopback reflection 在什么场景需要开启？","gold_doc_ids":["openwrt_firewall_setup.md"],"notes":"LAN access via public hostname/IP"}
+{"query_id":"q12","query":"外网无法访问端口时，如何排查 CGNAT 和上级光猫桥接？","gold_doc_ids":["openwrt_firewall_setup.md"],"notes":"WAN accessibility troubleshooting"}
+{"query_id":"q13","query":"VMFS datastore 和 NFS datastore 的存储来源有什么区别？","gold_doc_ids":["esxi_storage_management.md"],"notes":"datastore types"}
+{"query_id":"q14","query":"What causes snapshot delta disks to grow until a datastore fills?","gold_doc_ids":["esxi_storage_management.md"],"notes":"snapshot ballooning"}
+{"query_id":"q15","query":"ESXi 存储空间不足时用什么 esxcli 命令检查占用？","gold_doc_ids":["esxi_storage_management.md"],"notes":"esxcli storage filesystem list"}
+{"query_id":"q16","query":"How should accumulated VM snapshots be consolidated?","gold_doc_ids":["esxi_storage_management.md"],"notes":"delete/consolidate snapshots in vSphere Client"}
+{"query_id":"q17","query":"精简置备超分配为什么会导致物理空间耗尽？","gold_doc_ids":["esxi_storage_management.md"],"notes":"thin provisioning"}
+{"query_id":"q18","query":"What minimum free datastore buffer does the note recommend?","gold_doc_ids":["esxi_storage_management.md"],"notes":"20% free buffer"}
+{"query_id":"q19","query":"Which HomeLab service handles reverse proxy and Let's Encrypt renewal?","gold_doc_ids":["docker_homelab_services.md"],"notes":"Nginx Proxy Manager"}
+{"query_id":"q20","query":"Docker bridge network 内的容器如何通过名字互相解析？","gold_doc_ids":["docker_homelab_services.md"],"notes":"bridge container-name DNS"}
+{"query_id":"q21","query":"When is Docker macvlan useful for a home network service?","gold_doc_ids":["docker_homelab_services.md"],"notes":"LAN IP, Pi-hole/AdGuard"}
+{"query_id":"q22","query":"Postgres 容器的 healthcheck 示例使用什么 readiness 命令？","gold_doc_ids":["docker_homelab_services.md"],"notes":"pg_isready"}
+{"query_id":"q23","query":"Which metrics can docker stats show for containers?","gold_doc_ids":["docker_homelab_services.md"],"notes":"CPU/memory/network I/O"}
+{"query_id":"q24","query":"Why can Docker host networking introduce port conflicts?","gold_doc_ids":["docker_homelab_services.md"],"notes":"shared host network stack"}
