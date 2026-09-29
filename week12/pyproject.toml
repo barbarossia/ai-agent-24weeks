@@ -1,0 +1,23 @@
+[project]
+name = "homelab-knowledge-agent"
+version = "0.1.0"
+description = "Week 12: read-only Obsidian RAG and mock HomeLab MCP synthesis"
+requires-python = ">=3.12"
+dependencies = ["obsidian-knowledge-agent", "homelab-mcp-server"]
+
+[tool.uv.sources]
+obsidian-knowledge-agent = { path = "../week11/obsidian-knowledge-agent", editable = true }
+homelab-mcp-server = { path = "../week8/homelab-mcp-server", editable = true }
+
+[dependency-groups]
+dev = ["pytest>=8,<10"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project.scripts]
+homelab-knowledge-agent = "homelab_knowledge_agent.cli:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
