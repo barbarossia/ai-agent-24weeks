@@ -1,0 +1,20 @@
+[project]
+name = "persistence-checkpoint-lab"
+version = "0.1.0"
+description = "Week 14: crash recovery with LangGraph and SQLite checkpoints"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["langgraph>=1,<2", "langgraph-checkpoint-sqlite>=3,<4"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10"]
+
+[project.scripts]
+persistence-checkpoint-lab = "persistence_checkpoint_lab.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
