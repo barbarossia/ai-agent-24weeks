@@ -1,0 +1,23 @@
+[project]
+name = "langgraph-loop-lab"
+version = "0.1.0"
+description = "Week 13: the Week 5 deterministic agent loop as an explicit StateGraph"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["agent-loop-lab", "langgraph>=1,<2"]
+
+[tool.uv.sources]
+agent-loop-lab = { path = "../../week5/agent-loop-lab", editable = true }
+
+[dependency-groups]
+dev = ["pytest>=8,<10"]
+
+[project.scripts]
+langgraph-loop-lab = "langgraph_loop_lab.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
