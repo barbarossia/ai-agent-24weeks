@@ -1,0 +1,20 @@
+[project]
+name = "human-in-the-loop-lab"
+version = "0.1.0"
+description = "Week 15: human-in-the-loop Write Tool approval with interrupt, resume and an idempotent audit log"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["langgraph>=1,<2", "langgraph-checkpoint-sqlite>=3,<4"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10"]
+
+[project.scripts]
+human-in-the-loop-lab = "human_in_the_loop_lab.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
