@@ -1,0 +1,21 @@
+[project]
+name = "long-running-workflow-lab"
+version = "0.1.0"
+description = "Week 16: durable parallel diagnosis workflow with cooperative cancellation and approval"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["langgraph>=1,<2", "langgraph-checkpoint-sqlite>=3,<4"]
+
+[dependency-groups]
+dev = ["pytest>=8,<10"]
+
+[project.scripts]
+long-running-workflow-lab = "long_running_workflow_lab.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
