@@ -1,0 +1,27 @@
+[project]
+name = "week17-agent-evaluation-lab"
+version = "0.1.0"
+description = "Week 17: deterministic offline evaluation lab for the Week 12 knowledge agent"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["homelab-knowledge-agent", "pydantic>=2,<3"]
+
+[tool.uv.sources]
+homelab-knowledge-agent = { path = "../../week12", editable = true }
+
+[dependency-groups]
+dev = ["pytest>=8,<10"]
+
+[project.scripts]
+week17-eval = "week17_agent_evaluation_lab.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/week17_agent_evaluation_lab"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

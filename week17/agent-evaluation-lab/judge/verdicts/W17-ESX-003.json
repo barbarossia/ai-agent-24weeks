@@ -1,0 +1,8 @@
+{
+  "case_id": "W17-ESX-003",
+  "judge_verdict": "good",
+  "reasons": "User-supplied example verdict used only to validate the Judge schema and record path. No model was called to produce this verdict; it is not a semantic-quality evaluation.",
+  "reviewed_at": "2026-10-04",
+  "reviewer_initials": "EX",
+  "verdict_source": "user-supplied-example"
+}

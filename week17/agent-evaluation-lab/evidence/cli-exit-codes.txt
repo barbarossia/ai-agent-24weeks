@@ -1,0 +1,10 @@
+### validate OK (exit 0)
+exit=0
+### validate invalid (29 records -> exit 2)
+exit=2
+### run violation (contract_violations>0 with --fail-on-violation -> exit 2)
+evaluated 1 cases: passed=0 failed=1 blocked=0 contract_violations=1
+artifacts written to tmpsjjer0s_/ (report.json, trajectory.jsonl, run_meta.json)
+exit= 2
+### unexpected error is redacted (exit 1)
+exit= 1 | stderr= 'Operation failed; verify input and local dependencies.'

@@ -1,0 +1,4 @@
+### compared-artifact diff (report.json + trajectory.jsonl only; run_meta.json excluded by design)
+report.json: byte-identical
+trajectory.jsonl: byte-identical
+run_meta.json (volatile, excluded): differs as expected

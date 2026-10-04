@@ -1,0 +1,10 @@
+scenario=generation_failure case=W17-NET-001 status=blocked failed_stage=generation
+  stage=retrieval       status=pass     detail=retrieved 1 rows; required=fixture/runbooks/network-latency.md
+  stage=mcp             status=pass     detail=recorded tool calls=[('ping', {}), ('get_health_status', {})]
+  stage=generation      status=blocked  detail=scripted generation failure
+  checks={"answer_checks": false, "generation": false, "mcp": true, "retrieval": true}
+
+scenario=mcp_non_mock case=W17-NET-001 status=blocked failed_stage=mcp
+  stage=retrieval       status=pass     detail=retrieved 1 rows; required=fixture/runbooks/network-latency.md
+  stage=mcp             status=fail     detail=recorded tool calls=[('ping', {})]
+  checks={"answer_checks": false, "generation": false, "mcp": false, "retrieval": true}

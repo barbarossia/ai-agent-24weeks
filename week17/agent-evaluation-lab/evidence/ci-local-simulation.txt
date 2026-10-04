@@ -1,0 +1,16 @@
+### LOCAL WORKFLOW SIMULATION (not an observed GitHub Actions run)
+### repo is not pushed by this ticket; each command mirrors a workflow step
+
+$ uv sync --dev
+exit=0
+$ uv run pytest -q
+37 passed in 0.25s
+exit=
+$ uv run week17-eval validate --dataset data/golden_eval.jsonl
+30 records: network=10 docker=10 esxi=10, ids unique=True, esxi-degraded-cases=10, sanitizer clean
+exit=0
+$ uv run week17-eval run --dataset data/golden_eval.jsonl --out results/ --fail-on-violation
+evaluated 30 cases: passed=30 failed=0 blocked=0 contract_violations=0
+artifacts written to results/ (report.json, trajectory.jsonl, run_meta.json)
+exit=0
+artifact upload target exists: yes

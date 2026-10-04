@@ -1,0 +1,580 @@
+{
+  "aggregates": {
+    "blocked": 0,
+    "by_category": {
+      "docker": {
+        "failed": 0,
+        "passed": 10,
+        "total": 10
+      },
+      "esxi": {
+        "failed": 0,
+        "passed": 10,
+        "total": 10
+      },
+      "network": {
+        "failed": 0,
+        "passed": 10,
+        "total": 10
+      }
+    },
+    "contract_violations": 0,
+    "failed": 0,
+    "first_failing_stage_counts": {},
+    "passed": 30,
+    "per_check_failures": {
+      "answer_checks": 0,
+      "generation": 0,
+      "mcp": 0,
+      "retrieval": 0
+    },
+    "provenance_completeness": 1.0,
+    "total": 30
+  },
+  "cases": [
+    {
+      "answer_digest": "14144cf1f97776ee0f919facb1d71549370bb194ff0dc07b73d97922871b3023",
+      "case_id": "W17-NET-001",
+      "category": "network",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "bc1ef0cd9262604cd719939f91c707a6559e359d234653ccb2e32701f1403993",
+      "case_id": "W17-NET-002",
+      "category": "network",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "f20f99d3c181febb533a56433a1fab7cf89d642c21d907bc6506d33791e1e989",
+      "case_id": "W17-NET-003",
+      "category": "network",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "c59834f4710298d248ef73310a7b057f92a747958d632fda1769c03aab0bbf74",
+      "case_id": "W17-NET-004",
+      "category": "network",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "92afc714d1b80fc1b7e32d8b265e06b8223dc89a1c0ee48183c9f7d8df07eea9",
+      "case_id": "W17-NET-005",
+      "category": "network",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "a3834a3165ca1f8f1dfd9fa6af81d479b42fac2ca4ac899553ed85e70d8bb65c",
+      "case_id": "W17-NET-006",
+      "category": "network",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "3211990d36eccc54164e0a0d05438f65d5b52a833bc3501699f93642654f9840",
+      "case_id": "W17-NET-007",
+      "category": "network",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "260f7697d16e19695428a8a9a690b8f0c2735731805d1d29ef824d60e3bcbdbb",
+      "case_id": "W17-NET-008",
+      "category": "network",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "fca49affa8cfd6a36728f8e34f47727ff9b4a97c7acc7885776f58f8798310df",
+      "case_id": "W17-NET-009",
+      "category": "network",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "b1a76fbae0629130da295c211006b7c33265557e55cfdfd05d82c320fae7b8ad",
+      "case_id": "W17-NET-010",
+      "category": "network",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "0ea28d9f293c30de3056ffc29212ad6d15ac2970c08a73aa5708e2dad98755a2",
+      "case_id": "W17-DOC-001",
+      "category": "docker",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "3d4cada426637a3011d3894574a4c4ee020af99a45318e12e1b0d71227f28213",
+      "case_id": "W17-DOC-002",
+      "category": "docker",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "3d4f285558dc9106db1b2a74beea751332d9a92df252e9239f7729ec5c99e2ce",
+      "case_id": "W17-DOC-003",
+      "category": "docker",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "f3da97c055ba8c9335bd7bff2ed9f8f20e5cf75bec414c70fb3dd8dbd282d6dc",
+      "case_id": "W17-DOC-004",
+      "category": "docker",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "a81b00f79d38c4b34ae03739dcfa47bcccdbc150f6f4f8a7a6a7d0c8ed020a38",
+      "case_id": "W17-DOC-005",
+      "category": "docker",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "5161de6047d509e509835b7767cb4286909f6b6308641bfac264ada05947248e",
+      "case_id": "W17-DOC-006",
+      "category": "docker",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "d2190da774d8d17d67a4876c7bdd0203db25b2789bb52de0210fe5dda5e58148",
+      "case_id": "W17-DOC-007",
+      "category": "docker",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "90fcdae480d55101a815fedd282e2bfa96f2310258d5e471b697bd8fe0968a5e",
+      "case_id": "W17-DOC-008",
+      "category": "docker",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "48ceb8ae33de43f9aa9ac67fcb00f4d892731a623772543a7a3f556fca50b08c",
+      "case_id": "W17-DOC-009",
+      "category": "docker",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "8c6580bfcb43119726ac3316dc623d3e08083c96ae74d647111da170ccd86ebf",
+      "case_id": "W17-DOC-010",
+      "category": "docker",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "c66cced8b599555e919c9dfdeb1bcbc813afeeb849cb59cb543cb19bf0887e03",
+      "case_id": "W17-ESX-001",
+      "category": "esxi",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "552c5b0ed42f7fffa69f3031122c167166f75b297b59d6a5dd6488ec2b9b1e93",
+      "case_id": "W17-ESX-002",
+      "category": "esxi",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "86ce9516c14633a85e66366e438f9c4fa061e3568915d7de3af85f8cfa367287",
+      "case_id": "W17-ESX-003",
+      "category": "esxi",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "03849b07d3c373850fc3ca9b838a54247a59f3a6eb2e1918a3a1c6ff81ed1263",
+      "case_id": "W17-ESX-004",
+      "category": "esxi",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "0fb4359401776b4815060b5226dfac433d8a1a4a38f2c86400ae41f33ccbfde7",
+      "case_id": "W17-ESX-005",
+      "category": "esxi",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "0603674fd17dab9801e369900e86d91718fe01f3434122f7c230d00aba7cd240",
+      "case_id": "W17-ESX-006",
+      "category": "esxi",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "2ad85e3640cf9dba8f2346bfc282f513bfc93b514d5ae0a7a802fe2cd451785c",
+      "case_id": "W17-ESX-007",
+      "category": "esxi",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "f85868096feae42fc2190b6af9abe02cf3d1b127aeb0f728287e6666ae620498",
+      "case_id": "W17-ESX-008",
+      "category": "esxi",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "516b4de05726a1f008420fb88ba4b587c8e03cd37e371a0380da28cc9937f1e8",
+      "case_id": "W17-ESX-009",
+      "category": "esxi",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    },
+    {
+      "answer_digest": "4c3fc837acdb063eab370c54ee6028f78a5c75d0fd4fcf684addabc14507d154",
+      "case_id": "W17-ESX-010",
+      "category": "esxi",
+      "checks": {
+        "answer_checks": true,
+        "generation": true,
+        "mcp": true,
+        "retrieval": true
+      },
+      "failed_stage": null,
+      "knowledge_count": 1,
+      "mcp_tool_sequence": [
+        "ping",
+        "get_health_status"
+      ],
+      "status": "pass"
+    }
+  ],
+  "clock_frozen_to": "2026-01-01T00:00:00+00:00",
+  "disclaimer": "The evaluated agent performs a fixed ping->get_health_status sequence coded in Week 12; no component selects tools or arguments per question. Week 17 therefore measures integration-allowlist conformance and argument-shape accuracy (empty {}), NOT dynamic per-question tool selection.",
+  "judge_provenance": "示例判定为用户提供的样例（仅验证 Judge schema 与流程），本轮未调用任何模型；Judge 路径与确定性离线评测分离，离线指标不依赖 Judge。",
+  "schema_version": "1"
+}

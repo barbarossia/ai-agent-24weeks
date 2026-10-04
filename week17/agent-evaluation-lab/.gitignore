@@ -1,0 +1,7 @@
+# Week 17 lab generated/volatile artifacts.
+# Regenerating the evaluation must not dirty the tracked tree:
+#  - results/ holds ad-hoc `week17-eval run` output.
+#  - run_meta.json is the ONLY file with volatile wall-clock/durations.
+/results/
+/evidence/**/run_meta.json
+/evidence/run_meta.json

@@ -1,0 +1,43 @@
+name: week17-eval
+
+on:
+  pull_request:
+    paths:
+      - "week17/**"
+      - ".github/workflows/week17-eval.yml"
+  workflow_dispatch:
+
+jobs:
+  offline-eval:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: week17/agent-evaluation-lab
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+
+      - name: Sync dependencies (editable week12/11/9/8 chain)
+        run: uv sync --dev
+
+      - name: Offline test suite
+        run: uv run pytest -q
+
+      - name: Validate golden dataset
+        run: uv run week17-eval validate --dataset data/golden_eval.jsonl
+
+      - name: Run deterministic offline evaluation
+        run: uv run week17-eval run --dataset data/golden_eval.jsonl --out results/ --fail-on-violation
+
+      - name: Upload evaluation artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: week17-eval-results
+          path: week17/agent-evaluation-lab/results/
+          if-no-files-found: warn
+          retention-days: 14

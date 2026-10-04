@@ -1,0 +1,93 @@
+
+==================================== ERRORS ====================================
+____________ ERROR collecting tests/evals/test_collect_contract.py _____________
+ImportError while importing test module '/Users/barbarossia/repo/ai-agent-24weeks/week17/agent-evaluation-lab/tests/evals/test_collect_contract.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../../.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/evals/test_collect_contract.py:9: in <module>
+    from week17_agent_evaluation_lab.clock import FROZEN_ISO, freeze_homelab_clock
+E   ModuleNotFoundError: No module named 'week17_agent_evaluation_lab.clock'
+_______________ ERROR collecting tests/evals/test_determinism.py _______________
+ImportError while importing test module '/Users/barbarossia/repo/ai-agent-24weeks/week17/agent-evaluation-lab/tests/evals/test_determinism.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../../.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/evals/test_determinism.py:5: in <module>
+    from week17_agent_evaluation_lab.runner import run_dataset, write_artifacts
+E   ModuleNotFoundError: No module named 'week17_agent_evaluation_lab.runner'
+_________________ ERROR collecting tests/evals/test_guards.py __________________
+ImportError while importing test module '/Users/barbarossia/repo/ai-agent-24weeks/week17/agent-evaluation-lab/tests/evals/test_guards.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../../.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/evals/test_guards.py:9: in <module>
+    from week17_agent_evaluation_lab.clock import FROZEN_ISO
+E   ModuleNotFoundError: No module named 'week17_agent_evaluation_lab.clock'
+_____________ ERROR collecting tests/evals/test_report_metrics.py ______________
+ImportError while importing test module '/Users/barbarossia/repo/ai-agent-24weeks/week17/agent-evaluation-lab/tests/evals/test_report_metrics.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../../.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/evals/test_report_metrics.py:5: in <module>
+    from week17_agent_evaluation_lab.runner import run_dataset
+E   ModuleNotFoundError: No module named 'week17_agent_evaluation_lab.runner'
+___________ ERROR collecting tests/evals/test_trajectory_failure.py ____________
+ImportError while importing test module '/Users/barbarossia/repo/ai-agent-24weeks/week17/agent-evaluation-lab/tests/evals/test_trajectory_failure.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../../.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/evals/test_trajectory_failure.py:3: in <module>
+    from week17_agent_evaluation_lab.doubles import RecordingSession, ScriptedGeneration
+E   ModuleNotFoundError: No module named 'week17_agent_evaluation_lab.doubles'
+______________________ ERROR collecting tests/test_cli.py ______________________
+ImportError while importing test module '/Users/barbarossia/repo/ai-agent-24weeks/week17/agent-evaluation-lab/tests/test_cli.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../../.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_cli.py:5: in <module>
+    from week17_agent_evaluation_lab import cli
+E   ImportError: cannot import name 'cli' from 'week17_agent_evaluation_lab' (/Users/barbarossia/repo/ai-agent-24weeks/week17/agent-evaluation-lab/src/week17_agent_evaluation_lab/__init__.py)
+_______________ ERROR collecting tests/test_dataset_integrity.py _______________
+ImportError while importing test module '/Users/barbarossia/repo/ai-agent-24weeks/week17/agent-evaluation-lab/tests/test_dataset_integrity.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../../.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_dataset_integrity.py:8: in <module>
+    from week17_agent_evaluation_lab.dataset import (
+E   ModuleNotFoundError: No module named 'week17_agent_evaluation_lab.dataset'
+_____________________ ERROR collecting tests/test_judge.py _____________________
+ImportError while importing test module '/Users/barbarossia/repo/ai-agent-24weeks/week17/agent-evaluation-lab/tests/test_judge.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+../../../../.local/share/uv/python/cpython-3.12.13-macos-aarch64-none/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_judge.py:5: in <module>
+    from week17_agent_evaluation_lab import cli
+E   ImportError: cannot import name 'cli' from 'week17_agent_evaluation_lab' (/Users/barbarossia/repo/ai-agent-24weeks/week17/agent-evaluation-lab/src/week17_agent_evaluation_lab/__init__.py)
+=========================== short test summary info ============================
+ERROR tests/evals/test_collect_contract.py
+ERROR tests/evals/test_determinism.py
+ERROR tests/evals/test_guards.py
+ERROR tests/evals/test_report_metrics.py
+ERROR tests/evals/test_trajectory_failure.py
+ERROR tests/test_cli.py
+ERROR tests/test_dataset_integrity.py
+ERROR tests/test_judge.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 8 errors during collection !!!!!!!!!!!!!!!!!!!!
+8 errors in 0.21s

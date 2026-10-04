@@ -1,0 +1,20 @@
+### judge --prepare (redacted packet, no model call)
+wrote redacted judge packet: W17-ESX-003.md
+示例判定为用户提供的样例（仅验证 Judge schema 与流程），本轮未调用任何模型；Judge 路径与确定性离线评测分离，离线指标不依赖 Judge。
+exit=0
+### example verdict (user-supplied-example)
+{
+  "case_id": "W17-ESX-003",
+  "judge_verdict": "good",
+  "reasons": "User-supplied example verdict used only to validate the Judge schema and record path. No model was called to produce this verdict; it is not a semantic-quality evaluation.",
+  "reviewed_at": "2026-10-04",
+  "reviewer_initials": "EX",
+  "verdict_source": "user-supplied-example"
+}
+
+### judge --record
+verdict schema valid; Judge path is separate from the deterministic offline score.
+exit=0
+
+### judge --record without provenance (invalid -> exit 2)
+exit=2

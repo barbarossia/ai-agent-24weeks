@@ -1,0 +1,35 @@
+### pytest summary
+.....................................                                    [100%]
+37 passed in 0.23s
+
+### validate
+30 records: network=10 docker=10 esxi=10, ids unique=True, esxi-degraded-cases=10, sanitizer clean
+exit=0
+
+### full run 1
+evaluated 30 cases: passed=30 failed=0 blocked=0 contract_violations=0
+artifacts written to run1/ (report.json, trajectory.jsonl, run_meta.json)
+exit=0
+
+### full run 2
+evaluated 30 cases: passed=30 failed=0 blocked=0 contract_violations=0
+artifacts written to run2/ (report.json, trajectory.jsonl, run_meta.json)
+exit=0
+
+### two-run diff (expected empty)
+diff -r evidence/run1/run_meta.json evidence/run2/run_meta.json
+3,5c3,5
+<   "duration_ms": 75.985,
+<   "finished_at": "2026-10-04T02:24:49.402365+00:00",
+<   "started_at": "2026-10-04T02:24:49.326385+00:00"
+---
+>   "duration_ms": 72.29,
+>   "finished_at": "2026-10-04T02:24:49.571137+00:00",
+>   "started_at": "2026-10-04T02:24:49.498850+00:00"
+DIFF_EMPTY=no
+
+### compared artifact hashes
+f1d99fd52490e952b10d2cd5d646e8c9bbdfe86c8c39ea006a423217028d45dc  evidence/run1/report.json
+f1d99fd52490e952b10d2cd5d646e8c9bbdfe86c8c39ea006a423217028d45dc  evidence/run2/report.json
+e4c89d209445f347c12cbeb65ec856b9c29d80715cb3a028e290c6b2b0d801ac  evidence/run1/trajectory.jsonl
+e4c89d209445f347c12cbeb65ec856b9c29d80715cb3a028e290c6b2b0d801ac  evidence/run2/trajectory.jsonl
