@@ -624,6 +624,8 @@ Agent Steps
 
 ## Week 19 — Agent Security
 
+Offline security lab: [week19/agent-security-lab](week19/agent-security-lab/README.md).
+
 ### 学习
 - Prompt Injection
 - Indirect Prompt Injection
