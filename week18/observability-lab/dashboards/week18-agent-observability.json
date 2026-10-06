@@ -1,0 +1,12 @@
+{
+  "title": "Week 18 Agent Observability (Offline Lab)",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "panels": [
+    {"id": 1, "title": "Request rate", "type": "timeseries", "targets": [{"expr": "sum(rate(agent_requests_total{operation=\"request\"}[5m]))", "legendFormat": "requests/s"}]},
+    {"id": 2, "title": "Request errors", "type": "timeseries", "targets": [{"expr": "sum(rate(agent_errors_total{operation=\"request\"}[5m]))", "legendFormat": "errors/s"}]},
+    {"id": 3, "title": "Operation latency p95", "type": "timeseries", "targets": [{"expr": "histogram_quantile(0.95, sum by (le) (rate(agent_operation_duration_ms_bucket[5m])))", "legendFormat": "p95 ms"}]},
+    {"id": 4, "title": "Token and cost totals", "type": "timeseries", "targets": [{"expr": "sum(agent_tokens_total)", "legendFormat": "tokens"}, {"expr": "sum(agent_cost_usd_total)", "legendFormat": "estimated USD"}]}
+  ]
+}
