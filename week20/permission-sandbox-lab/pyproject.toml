@@ -1,0 +1,13 @@
+[project]
+name = "week20-permission-sandbox-lab"
+version = "0.1.0"
+description = "Offline RBAC, approval, trace, metrics, and audit lab"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+week20-permission-demo = "week20_permission_sandbox.core:main"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]
