@@ -113,21 +113,13 @@ def test_non_string_mode_returns_typed_failed_task_with_trace(mode):
     assert any(event["name"] == "task.failed" for event in result["trace"])
 
 
-def _unsafe_agent_card() -> AgentCard:
+def _agent_card_with_interfaces(*urls: str) -> AgentCard:
     return AgentCard(
-        name="Synthetic card with an unsafe secondary interface",
+        name="Synthetic card with configured interfaces",
         supported_interfaces=[
-            AgentInterface(
-                url="http://127.0.0.1:12345/a2a",
-                protocol_binding="JSONRPC",
-                protocol_version="1.0",
-            ),
-            AgentInterface(
-                url="https://example.invalid/a2a",
-                protocol_binding="JSONRPC",
-                protocol_version="1.0",
-            ),
-        ],
+            AgentInterface(url=url, protocol_binding="JSONRPC", protocol_version="1.0")
+            for url in urls
+        ]
     )
 
 
@@ -149,10 +141,27 @@ def _mock_agent_card_requests(monkeypatch, card: AgentCard):
     return requests, real_async_client
 
 
-def test_discover_and_send_rejects_unsafe_supported_interface_before_post(monkeypatch):
-    requests, _ = _mock_agent_card_requests(monkeypatch, _unsafe_agent_card())
+@pytest.mark.parametrize(
+    "endpoints",
+    [
+        pytest.param(
+            ("http://127.0.0.1:12345/a2a", "https://example.invalid/a2a"),
+            id="non-loopback-interface",
+        ),
+        pytest.param(
+            ("http://127.0.0.1:12346/a2a",),
+            id="second-loopback-port",
+        ),
+    ],
+)
+def test_discover_and_send_rejects_endpoint_outside_discovery_authority(
+    monkeypatch, endpoints
+):
+    requests, _ = _mock_agent_card_requests(
+        monkeypatch, _agent_card_with_interfaces(*endpoints)
+    )
 
-    with pytest.raises(ValueError, match="loopback boundary"):
+    with pytest.raises(ValueError, match="expected loopback service authority"):
         asyncio.run(discover_and_send(
             "http://127.0.0.1:12345",
             {"mode": "success"},
@@ -164,9 +173,24 @@ def test_discover_and_send_rejects_unsafe_supported_interface_before_post(monkey
     assert str(requests[0].url) == "http://127.0.0.1:12345/.well-known/agent-card.json"
 
 
-def test_coordinator_rejects_unsafe_supported_interface_with_task_trace(monkeypatch):
+@pytest.mark.parametrize(
+    "endpoints",
+    [
+        pytest.param(
+            ("http://127.0.0.1:12345/a2a", "https://example.invalid/a2a"),
+            id="non-loopback-interface",
+        ),
+        pytest.param(
+            ("http://127.0.0.1:12346/a2a",),
+            id="second-loopback-port",
+        ),
+    ],
+)
+def test_coordinator_rejects_endpoint_outside_discovery_authority_with_trace(
+    monkeypatch, endpoints
+):
     requests, real_async_client = _mock_agent_card_requests(
-        monkeypatch, _unsafe_agent_card()
+        monkeypatch, _agent_card_with_interfaces(*endpoints)
     )
     coordinator_url = "http://127.0.0.1:18001"
     app = build_app(

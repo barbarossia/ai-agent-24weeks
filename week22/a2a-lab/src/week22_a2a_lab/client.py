@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 from typing import Any
+from urllib.parse import urlsplit
 
 import httpx
 from a2a.client import A2ACardResolver, ClientConfig, create_client
@@ -19,19 +20,26 @@ from .urls import require_loopback_http_url
 
 
 class UnsafeAgentCardEndpoint(ValueError):
-    """An advertised A2A endpoint is outside the lab's loopback boundary."""
+    """An advertised A2A endpoint escapes the discovered service authority."""
 
 
-def validate_agent_card_endpoints(card: AgentCard) -> AgentCard:
-    """Reject a card if any supported interface could direct traffic off-loopback."""
+def validate_agent_card_endpoints(
+    card: AgentCard, *, expected_service_url: str
+) -> AgentCard:
+    """Reject card interfaces outside the loopback authority used for discovery."""
     if not card.supported_interfaces:
         raise UnsafeAgentCardEndpoint("Agent Card advertises no supported interfaces")
+    expected_authority = urlsplit(
+        require_loopback_http_url(expected_service_url)
+    ).netloc
     try:
         for interface in card.supported_interfaces:
-            require_loopback_http_url(interface.url, allow_path=True)
+            endpoint_url = require_loopback_http_url(interface.url, allow_path=True)
+            if urlsplit(endpoint_url).netloc != expected_authority:
+                raise ValueError("advertised endpoint authority differs from discovery authority")
     except ValueError as error:
         raise UnsafeAgentCardEndpoint(
-            "Agent Card advertises an endpoint outside the loopback boundary"
+            "Agent Card advertises an endpoint outside the expected loopback service authority"
         ) from error
     return card
 
@@ -72,10 +80,10 @@ async def resolve_agent_card(
     base_url = require_loopback_http_url(base_url)
     if http_client is not None:
         card = await A2ACardResolver(http_client, base_url).get_agent_card()
-        return validate_agent_card_endpoints(card)
+        return validate_agent_card_endpoints(card, expected_service_url=base_url)
     async with httpx.AsyncClient(timeout=3.0, trust_env=False) as local_client:
         card = await A2ACardResolver(local_client, base_url).get_agent_card()
-        return validate_agent_card_endpoints(card)
+        return validate_agent_card_endpoints(card, expected_service_url=base_url)
 
 
 def summarize_task_stream(
