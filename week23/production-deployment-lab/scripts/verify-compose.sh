@@ -12,6 +12,10 @@ fi
 
 docker compose up --build --detach --wait
 "$LAB_PYTHON" -m week23_production_lab.eval --verify-observability
+docker compose logs --no-color api > .local/api-logs.txt
+"$LAB_PYTHON" -m week23_production_lab.eval \
+    --verify-state-file .local/eval-state.json \
+    --verify-log-file .local/api-logs.txt
 
 docker compose restart api
 "$LAB_PYTHON" -m week23_production_lab.eval --verify-state-file .local/eval-state.json

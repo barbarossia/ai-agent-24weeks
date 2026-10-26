@@ -24,6 +24,25 @@ from .storage import PostgresStore, TaskRecord, TaskStore
 
 
 _tracing_configured = False
+_REQUEST_LOGGER_NAME = "week23.api"
+_REQUEST_LOG_HANDLER_NAME = "week23.request-json"
+
+
+def _configure_request_logger() -> logging.Logger:
+    logger = logging.getLogger(_REQUEST_LOGGER_NAME)
+    logger.setLevel(logging.INFO)
+    logger.disabled = False
+    logger.propagate = False
+    if not any(
+        handler.get_name() == _REQUEST_LOG_HANDLER_NAME
+        for handler in logger.handlers
+    ):
+        handler = logging.StreamHandler()
+        handler.set_name(_REQUEST_LOG_HANDLER_NAME)
+        handler.setLevel(logging.INFO)
+        handler.setFormatter(logging.Formatter("%(message)s"))
+        logger.addHandler(handler)
+    return logger
 
 
 def configure_tracing() -> None:
@@ -67,7 +86,7 @@ def create_app(store: TaskStore | None = None) -> FastAPI:
         "agent_task_requests_total", "Completed deterministic synthetic tasks",
         ("operation",), registry=registry,
     )
-    logger = logging.getLogger("week23.api")
+    logger = _configure_request_logger()
 
     @asynccontextmanager
     async def lifespan(app: FastAPI) -> AsyncIterator[None]:

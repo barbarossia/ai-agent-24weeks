@@ -86,12 +86,13 @@ creation time, and trace ID. Fetch it with
 ```
 
 The eval dataset checks fixed `sum` and `echo` cases, request/response trace
-correlation, task retrieval, metrics, Jaeger trace receipt, and Prometheus
-scraping. The Compose smoke script also restarts the API and then runs
-`docker compose down` followed by `up`; it deliberately leaves the named
-`postgres_data` volume in place and verifies all task records again. It leaves
-the stack running for inspection. The CI workflow runs the same suite and
-smoke/eval sequence.
+correlation, task retrieval, structured API request logs and their trace IDs,
+metrics, Jaeger trace receipt, and Prometheus scraping. The Compose smoke
+script reads `docker compose logs` to verify the request records, restarts the
+API, and runs `docker compose down` followed by `up`. It deliberately leaves
+the named `postgres_data` volume in place and verifies all task records again.
+It leaves the stack running for inspection. The CI workflow runs the same suite
+and smoke/eval sequence.
 
 ## Inspect logs, metrics, and traces
 

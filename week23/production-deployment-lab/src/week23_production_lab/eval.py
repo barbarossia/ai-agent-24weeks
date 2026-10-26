@@ -115,6 +115,43 @@ def verify_state(base_url: str, context: ssl.SSLContext, state_file: Path) -> di
     return {"persisted": len(state["tasks"]), "state_file": str(state_file)}
 
 
+def verify_request_logs(log_file: Path, state_file: Path) -> dict[str, int]:
+    state = json.loads(state_file.read_text(encoding="utf-8"))
+    records: list[dict[str, Any]] = []
+    for line in log_file.read_text(encoding="utf-8").splitlines():
+        payload = line.split("|", maxsplit=1)[-1].strip()
+        try:
+            record = json.loads(payload)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(record, dict) and record.get("event") == "http_request":
+            records.append(record)
+
+    assert records, "API container logs contained no structured http_request records"
+    for record in records:
+        assert isinstance(record.get("duration_ms"), (int, float)), record
+        assert isinstance(record.get("trace_id"), str) and len(record["trace_id"]) == 32, record
+
+    for task in state["tasks"]:
+        assert any(
+            record.get("method") == "POST"
+            and record.get("route") == "/v1/tasks"
+            and record.get("status") == 201
+            and record.get("trace_id") == task["trace_id"]
+            for record in records
+        ), f"API logs did not contain correlated creation request for {task['name']}"
+    assert any(
+        record.get("method") == "GET"
+        and record.get("route") == "/v1/tasks/{task_id}"
+        and record.get("status") == 200
+        for record in records
+    ), "API logs did not contain a normalized task retrieval request"
+    return {
+        "http_request_logs": len(records),
+        "correlated_task_creates": len(state["tasks"]),
+    }
+
+
 def verify_observability(
     context: ssl.SSLContext, state_file: Path, prometheus_url: str, jaeger_url: str,
 ) -> dict[str, int]:
@@ -151,6 +188,7 @@ def main() -> None:
     parser.add_argument("--dataset", type=Path, default=Path("evals/cases.json"))
     parser.add_argument("--state-file", type=Path, default=Path(".local/eval-state.json"))
     parser.add_argument("--verify-state-file", type=Path)
+    parser.add_argument("--verify-log-file", type=Path)
     parser.add_argument("--verify-observability", action="store_true")
     parser.add_argument("--prometheus-url", default="http://localhost:9090")
     parser.add_argument("--jaeger-url", default="http://localhost:16686")
@@ -163,6 +201,8 @@ def main() -> None:
         else:
             result = run_eval(args.base_url, context, args.dataset, args.state_file)
             state_file = args.state_file
+        if args.verify_log_file:
+            result["request_logs"] = verify_request_logs(args.verify_log_file, state_file)
         if args.verify_observability:
             result["observability"] = verify_observability(
                 context, state_file, args.prometheus_url, args.jaeger_url,

@@ -1,4 +1,6 @@
 from datetime import datetime, timezone
+import json
+import logging
 from uuid import UUID, uuid4
 
 from fastapi.testclient import TestClient
@@ -49,6 +51,41 @@ def test_task_round_trip_and_trace_context() -> None:
         fetched = client.get(f"/v1/tasks/{created['id']}")
         assert fetched.status_code == 200
         assert fetched.json()["result"] == {"total": 10}
+
+
+def test_request_logs_are_structured_and_correlated(caplog) -> None:
+    trace_id = "abcdef0123456789abcdef0123456789"
+    parent_span_id = "abcdef0123456789"
+    logger = logging.getLogger("week23.api")
+    capture_level = caplog.handler.level
+    caplog.handler.setLevel(logging.INFO)
+    logger.addHandler(caplog.handler)
+    try:
+        with TestClient(create_app(MemoryStore())) as client:
+            response = client.get(
+                "/health/live",
+                headers={"traceparent": f"00-{trace_id}-{parent_span_id}-01"},
+            )
+    finally:
+        logger.removeHandler(caplog.handler)
+        caplog.handler.setLevel(capture_level)
+
+    assert response.status_code == 200
+    records = [
+        json.loads(record.getMessage())
+        for record in caplog.records
+        if record.name == "week23.api" and record.getMessage().startswith("{")
+    ]
+    assert records
+    request_log = records[-1]
+    assert {
+        "event": "http_request",
+        "method": "GET",
+        "route": "/health/live",
+        "status": 200,
+        "trace_id": trace_id,
+    } == {key: request_log[key] for key in ("event", "method", "route", "status", "trace_id")}
+    assert isinstance(request_log["duration_ms"], (int, float))
 
 
 def test_readiness_fails_when_database_is_unavailable() -> None:
