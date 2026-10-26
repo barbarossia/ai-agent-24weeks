@@ -1,0 +1,15 @@
+flowchart TD
+    Human[Human operator] -->|request + explicit approval| Graph[LangGraph workflow]
+    Graph -->|retrieve, cited excerpts| Vault[(Local Obsidian fixture vault)]
+    Graph -->|five read checks over stdio| ReadMCP[Read-only MCP server]
+    ReadMCP --> Fixtures[(Immutable scenario fixtures)]
+    Graph -->|typed evidence handoff| Analyst[Diagnostic specialist]
+    Analyst --> Reviewer[Independent SRE reviewer]
+    Reviewer -->|cause + one allowlisted proposal| Graph
+    Graph -->|checkpoint before interrupt| SQLite[(SQLite checkpoint)]
+    Graph -->|interrupt / resume| Human
+    Graph -->|after approval only: short-lived capability| WriteMCP[Simulated-write MCP server]
+    WriteMCP -->|in-memory overlay only| Overlay[(Synthetic scenario state)]
+    Graph -->|five read checks with overlay| ReadMCP
+    Graph --> Report[Source-cited report]
+    Graph --> Trace[JSONL spans + metrics]
