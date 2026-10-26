@@ -18,6 +18,24 @@ from a2a.types.a2a_pb2 import (
 from .urls import require_loopback_http_url
 
 
+class UnsafeAgentCardEndpoint(ValueError):
+    """An advertised A2A endpoint is outside the lab's loopback boundary."""
+
+
+def validate_agent_card_endpoints(card: AgentCard) -> AgentCard:
+    """Reject a card if any supported interface could direct traffic off-loopback."""
+    if not card.supported_interfaces:
+        raise UnsafeAgentCardEndpoint("Agent Card advertises no supported interfaces")
+    try:
+        for interface in card.supported_interfaces:
+            require_loopback_http_url(interface.url, allow_path=True)
+    except ValueError as error:
+        raise UnsafeAgentCardEndpoint(
+            "Agent Card advertises an endpoint outside the loopback boundary"
+        ) from error
+    return card
+
+
 async def discover_and_send(
     base_url: str,
     payload: dict[str, Any],
@@ -52,10 +70,12 @@ async def resolve_agent_card(
 ) -> AgentCard:
     """Resolve a local service's public card through the SDK's well-known URI."""
     base_url = require_loopback_http_url(base_url)
-    if http_client:
-        return await A2ACardResolver(http_client, base_url).get_agent_card()
+    if http_client is not None:
+        card = await A2ACardResolver(http_client, base_url).get_agent_card()
+        return validate_agent_card_endpoints(card)
     async with httpx.AsyncClient(timeout=3.0, trust_env=False) as local_client:
-        return await A2ACardResolver(local_client, base_url).get_agent_card()
+        card = await A2ACardResolver(local_client, base_url).get_agent_card()
+        return validate_agent_card_endpoints(card)
 
 
 def summarize_task_stream(

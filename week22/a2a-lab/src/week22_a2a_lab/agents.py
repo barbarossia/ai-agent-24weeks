@@ -7,7 +7,7 @@ from dataclasses import dataclass, field
 from typing import Any, cast
 
 import httpx
-from a2a.client import A2ACardResolver, ClientConfig, create_client
+from a2a.client import ClientConfig, create_client
 from a2a.helpers import new_text_message, new_text_part
 from a2a.server.agent_execution import AgentExecutor, RequestContext
 from a2a.server.events import EventQueue
@@ -15,6 +15,7 @@ from a2a.server.tasks import TaskUpdater
 from a2a.types.a2a_pb2 import Role, SendMessageRequest, Task, TaskState, TaskStatus
 from a2a.utils.errors import A2AError
 
+from .client import UnsafeAgentCardEndpoint, resolve_agent_card
 from .urls import require_loopback_http_url
 
 
@@ -253,7 +254,7 @@ async def _call_specialist(
             parent_span_id="coordinator.receive",
             task_id=coordinator_task_id,
         ))
-        card = await A2ACardResolver(http_client, specialist_url).get_agent_card()
+        card = await resolve_agent_card(specialist_url, http_client)
         trace.append(_trace_event(
             trace_id=trace_id,
             service="coordinator",
@@ -411,16 +412,21 @@ class CoordinatorExecutor(AgentExecutor):
             task_id=task_id,
             state="submitted",
         ))
+        updater = TaskUpdater(event_queue, task_id, context_id)
+        await _enqueue_initial_task(context, event_queue, metadata={"trace_id": trace_id})
         try:
             request = json.loads(context.get_user_input())
         except json.JSONDecodeError:
             request = {}
-        mode = request.get("mode", "success") if isinstance(request, dict) else "success"
-        if mode not in {"success", "remote_failure", "slow"}:
+        mode_value = request.get("mode", "success") if isinstance(request, dict) else "success"
+        invalid_mode = not isinstance(mode_value, str)
+        if invalid_mode:
+            mode = "success"
+        elif mode_value not in {"success", "remote_failure", "slow"}:
             mode = "remote_failure"
+        else:
+            mode = mode_value
 
-        updater = TaskUpdater(event_queue, task_id, context_id)
-        await _enqueue_initial_task(context, event_queue, metadata={"trace_id": trace_id})
         working_message = new_text_message(
             "Coordinator is discovering a specialist.", role=Role.ROLE_AGENT
         )
@@ -442,27 +448,50 @@ class CoordinatorExecutor(AgentExecutor):
         observation = RemoteObservation()
         timed_out = False
         transport_error = ""
-        try:
-            await asyncio.wait_for(
-                _call_specialist(
-                    specialist_url=self.specialist_url,
-                    mode=mode,
+        if invalid_mode:
+            transport_error = "invalid_mode"
+            trace.append(_trace_event(
+                trace_id=trace_id,
+                service="coordinator",
+                name="request.rejected",
+                span_id="coordinator.request.rejected",
+                parent_span_id="coordinator.receive",
+                task_id=task_id,
+                state="failed",
+            ))
+        else:
+            try:
+                await asyncio.wait_for(
+                    _call_specialist(
+                        specialist_url=self.specialist_url,
+                        mode=mode,
+                        trace_id=trace_id,
+                        parent_span_id="coordinator.dispatch",
+                        observation=observation,
+                        trace=trace,
+                        coordinator_task_id=task_id,
+                    ),
+                    timeout=REMOTE_TIMEOUT_SECONDS,
+                )
+            except TimeoutError:
+                timed_out = True
+            except UnsafeAgentCardEndpoint:
+                transport_error = "remote_endpoint_not_allowed"
+                trace.append(_trace_event(
                     trace_id=trace_id,
-                    parent_span_id="coordinator.dispatch",
-                    observation=observation,
-                    trace=trace,
-                    coordinator_task_id=task_id,
-                ),
-                timeout=REMOTE_TIMEOUT_SECONDS,
-            )
-        except TimeoutError:
-            timed_out = True
-        except (A2AError, httpx.HTTPError) as error:
-            transport_error = (
-                "remote_protocol_error"
-                if isinstance(error, A2AError)
-                else "remote_unavailable"
-            )
+                    service="coordinator",
+                    name="agent_card.rejected",
+                    span_id="coordinator.discovery.rejected",
+                    parent_span_id="coordinator.discovery",
+                    task_id=task_id,
+                    state="failed",
+                ))
+            except (A2AError, httpx.HTTPError) as error:
+                transport_error = (
+                    "remote_protocol_error"
+                    if isinstance(error, A2AError)
+                    else "remote_unavailable"
+                )
 
         child_result = observation.artifacts[-1] if observation.artifacts else {}
         trace.extend(observation.trace)
@@ -559,6 +588,8 @@ class CoordinatorExecutor(AgentExecutor):
             }
         if outcome != "success":
             result["error"] = error
+        if invalid_mode:
+            result["error_type"] = "invalid_request"
 
         trace.append(_trace_event(
             trace_id=trace_id,
