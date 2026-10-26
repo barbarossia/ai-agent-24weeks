@@ -99,7 +99,7 @@ def _append_evidence_table(lines: list[str], observations: dict[str, dict[str, A
 
 
 def save_report_to_knowledge(report: str, run_id: str, vault_root: Path) -> Path:
-    """Save one generated report under indexed vault knowledge, with no caller path input."""
+    """Archive one generated report for secondary retrieval, with no caller path input."""
     import re
 
     if not re.fullmatch(r"[A-Za-z0-9_-]{1,100}", run_id):

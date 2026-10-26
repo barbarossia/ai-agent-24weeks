@@ -1,8 +1,12 @@
 import json
+import shutil
 from pathlib import Path
 
 from autonomous_homelab_sre_agent import workflow
 from autonomous_homelab_sre_agent.evals import run_evals
+from autonomous_homelab_sre_agent.knowledge import ObsidianRetriever
+from autonomous_homelab_sre_agent.report import save_report_to_knowledge
+from autonomous_homelab_sre_agent.scenarios import get_scenario
 
 
 LAB_ROOT = Path(__file__).parents[1]
@@ -73,3 +77,40 @@ async def test_eval_fails_if_interrupt_is_replaced_with_automatic_approval(monke
     assert result["approval_gate"]["passed"] is False
     assert result["approval_gate"]["pause"]["passed"] is False
     assert result["approval_gate"]["reject"]["passed"] is False
+
+
+async def test_saved_proxy_report_is_secondary_context_and_eval_recovers(tmp_path):
+    vault_root = tmp_path / "vault"
+    shutil.copytree(LAB_ROOT / "vault", vault_root)
+    report = (LAB_ROOT / "evidence" / "eval-run" / "reports" / "proxy-rule-mismatch.md").read_text()
+    saved_path = save_report_to_knowledge(report, "review_export", vault_root)
+    assert saved_path == vault_root / "knowledge" / "reports" / "troubleshooting-review_export.md"
+    save_report_to_knowledge(report, "prior_proxy_run", vault_root)
+
+    scenario = get_scenario("proxy-rule-mismatch")
+    retrieved = ObsidianRetriever(vault_root).retrieve(
+        scenario.request,
+        topic_terms=scenario.topic_terms,
+    )
+    sources = {item.source for item in retrieved.citations}
+    assert "knowledge/netflix-routing.md" in sources
+    assert any("should use the `PROXY` action" in item.excerpt for item in retrieved.citations)
+    report_citations = [
+        item for item in retrieved.citations
+        if item.source.startswith("knowledge/reports/")
+    ]
+    assert len(report_citations) == 1
+    assert retrieved.citations.index(report_citations[0]) > max(
+        index for index, item in enumerate(retrieved.citations)
+        if item.source == "knowledge/netflix-routing.md"
+    )
+
+    result = await run_evals(
+        dataset_path=LAB_ROOT / "evals" / "golden.jsonl",
+        vault_root=vault_root,
+        output_dir=tmp_path / "with-saved-report",
+    )
+    assert result["passed"] is True
+    proxy_case = next(case for case in result["cases"] if case["case_id"] == "proxy-rule-mismatch")
+    assert proxy_case["cause"] == "route_mismatch"
+    assert proxy_case["checks"]["cited_required_source"] is True

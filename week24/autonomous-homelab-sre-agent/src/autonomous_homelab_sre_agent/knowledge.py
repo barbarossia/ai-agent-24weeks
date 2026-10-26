@@ -56,7 +56,7 @@ def _sections(path: Path, vault_root: Path) -> list[tuple[str, int, str]]:
 
 
 class ObsidianRetriever:
-    """Small deterministic lexical retriever scoped to the bundled knowledge folder."""
+    """Prioritize canonical runbooks and include one matching archived report as context."""
 
     def __init__(self, vault_root: Path):
         self.vault_root = vault_root.resolve()
@@ -68,20 +68,32 @@ class ObsidianRetriever:
         if not 1 <= top_k <= 5:
             raise ValueError("top_k must be between 1 and 5")
         query_tokens = {word.casefold() for word in WORD.findall(f"{query} {topic_terms}")}
-        candidates: list[tuple[int, str, int, str, str]] = []
+        runbook_candidates: list[tuple[int, str, int, str, str]] = []
+        archive_candidates: list[tuple[int, str, int, str, str]] = []
         redacted = 0
         for path in sorted(self.knowledge_root.rglob("*.md")):
             resolved = path.resolve()
             if not resolved.is_relative_to(self.knowledge_root) or not resolved.is_file():
                 continue
+            relative_path = resolved.relative_to(self.knowledge_root)
+            document_candidates = archive_candidates if len(relative_path.parts) > 1 else runbook_candidates
             raw = path.read_text(encoding="utf-8")
             redacted += sum(1 for paragraph in re.split(r"\n\s*\n", raw) if looks_instruction_like(paragraph))
             for source, line, text in _sections(path, self.vault_root):
                 score = len(query_tokens & {word.casefold() for word in WORD.findall(text)})
                 if score:
                     heading, _, excerpt = text.partition("\n")
-                    candidates.append((score, source, line, heading, excerpt))
-        candidates.sort(key=lambda item: (-item[0], item[1], item[2]))
+                    document_candidates.append((score, source, line, heading, excerpt))
+        ordering = lambda item: (-item[0], item[1], item[2])
+        runbook_candidates.sort(key=ordering)
+        archive_candidates.sort(key=ordering)
+        if runbook_candidates and archive_candidates and top_k > 1:
+            # Keep canonical runbooks first and reserve one secondary slot for prior incidents.
+            selected = runbook_candidates[: top_k - 1] + archive_candidates[:1]
+        elif runbook_candidates:
+            selected = runbook_candidates[:top_k]
+        else:
+            selected = archive_candidates[:1]
         citations = tuple(
             Citation(
                 source=source,
@@ -90,6 +102,6 @@ class ObsidianRetriever:
                 excerpt=excerpt[:400],
                 source_id=f"{source}#{heading.lower().replace(' ', '-')}",
             )
-            for _, source, line, heading, excerpt in candidates[:top_k]
+            for _, source, line, heading, excerpt in selected
         )
         return RetrievedKnowledge(citations=citations, redacted_paragraphs=redacted)
