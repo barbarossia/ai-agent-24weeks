@@ -1,0 +1,9 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.py[cod]
+data/*.sqlite
+data/*.sqlite-*
+data/traces/
+data/evals/
+vault/reports/
