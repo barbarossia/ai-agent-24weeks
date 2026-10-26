@@ -9,6 +9,7 @@ from mcp import Client, StdioServerParameters
 
 from .models import SimulationResult
 from .scenarios import READ_TOOL_ORDER, get_scenario
+from .security import looks_instruction_like
 from .workflow_policy import proposal_digest
 
 
@@ -75,7 +76,12 @@ async def read_diagnostics(
                 on_tool(name, "started")
             try:
                 result = await client.call_tool(name, READ_TOOL_ARGUMENTS[name])
-                observations[name] = _tool_payload(result)
+                payload = _tool_payload(result)
+                if name == "read_recent_logs":
+                    for event in payload.get("events", []):
+                        if isinstance(event, dict) and looks_instruction_like(str(event.get("message", ""))):
+                            event["message"] = "[UNTRUSTED LOG TEXT REDACTED]"
+                observations[name] = payload
             except Exception:
                 if on_tool:
                     on_tool(name, "error")

@@ -13,6 +13,8 @@ INSTRUCTION_PATTERNS = (
     re.compile(r"\bcall\s+(?:the\s+)?write\s+tool\b", re.I),
     re.compile(r"\b(?:execute|run)\s+(?:this\s+)?(?:shell|command|script)\b", re.I),
 )
+EXPLICIT_DOMAIN = re.compile(r"\b(?:[a-z0-9-]+\.)+[a-z]{2,}\b", re.I)
+ALLOWED_REQUEST_DOMAINS = {"netflix.com", "www.netflix.com"}
 
 
 def looks_instruction_like(text: str) -> bool:
@@ -30,6 +32,9 @@ def understand_request(request: str, scenario: FixtureScenario) -> RequestAssess
         raise ValueError("request must be between 1 and 500 characters")
     if "netflix" not in request.casefold():
         raise ValueError("only the synthetic Netflix incident is supported")
+    domains = {domain.casefold() for domain in EXPLICIT_DOMAIN.findall(request)}
+    if not domains.issubset(ALLOWED_REQUEST_DOMAINS):
+        raise ValueError("request mentions a domain outside the supported fixture")
     # Keep only a canonical summary in the graph state; raw instructions stay out of downstream nodes.
     flagged = looks_instruction_like(request)
     incident = Incident(

@@ -22,7 +22,7 @@ def test_request_is_canonicalized_and_instructions_are_only_marked_as_untrusted(
     assert "write tool" not in assessment.incident.request_summary
 
 
-@pytest.mark.parametrize("user_text", ["", "YouTube is down", "n" * 501])
+@pytest.mark.parametrize("user_text", ["", "YouTube is down", "n" * 501, "Netflix and youtube.com are down"])
 def test_request_rejects_empty_unsupported_or_oversized_input(user_text):
     with pytest.raises(ValueError):
         understand_request(user_text, get_scenario("proxy-rule-mismatch"))

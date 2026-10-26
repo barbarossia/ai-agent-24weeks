@@ -23,7 +23,6 @@ class FixtureScenario:
     action_id: str
     action_description: str
     expected_effect: str
-    evidence_ids: tuple[str, ...]
     baseline: dict[str, dict[str, Any]]
     recovered: dict[str, dict[str, Any]]
 
@@ -95,7 +94,7 @@ SCENARIOS: dict[str, FixtureScenario] = {
         action_id="restore_media_proxy_route",
         action_description="Restore the Netflix rule to the approved media proxy route.",
         expected_effect="The Netflix rule selects PROXY through the media egress pool.",
-        evidence_ids=("rule.netflix-route", "log.latest"), baseline=_route,
+        baseline=_route,
         recovered=_recovered(_route, inspect_routing_rule={"action": "PROXY"}),
     ),
     "unhealthy-egress-node": FixtureScenario(
@@ -104,7 +103,7 @@ SCENARIOS: dict[str, FixtureScenario] = {
         action_id="shift_to_ready_egress_node",
         action_description="Shift the synthetic media route to the ready backup egress node.",
         expected_effect="The active egress node is ready and the rule targets it.",
-        evidence_ids=("node.active-egress", "log.latest"), baseline=_node,
+        baseline=_node,
         recovered=_recovered(
             _node,
             node_health={"active_node": "egress-us-b", "status": "ready"},
@@ -117,7 +116,7 @@ SCENARIOS: dict[str, FixtureScenario] = {
         action_id="flush_netflix_fixture_cache",
         action_description="Flush the synthetic cached Netflix DNS answer.",
         expected_effect="The DNS check returns the current fixture address.",
-        evidence_ids=("dns.netflix.com", "log.latest"), baseline=_dns,
+        baseline=_dns,
         recovered=_recovered(_dns, dns_lookup={"answers": ["198.51.100.30"]}),
     ),
 }

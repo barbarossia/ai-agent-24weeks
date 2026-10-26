@@ -1,0 +1,41 @@
+{
+  "counters": {
+    "approval_decisions_total|decision=approve": 1,
+    "knowledge_redactions_total|source=obsidian": 1,
+    "mcp_tool_calls_total|tool=apply_simulated_remediation|outcome=ok": 1,
+    "mcp_tool_calls_total|tool=dns_lookup|outcome=ok": 2,
+    "mcp_tool_calls_total|tool=inspect_routing_rule|outcome=ok": 2,
+    "mcp_tool_calls_total|tool=node_health|outcome=ok": 2,
+    "mcp_tool_calls_total|tool=proxy_health|outcome=ok": 2,
+    "mcp_tool_calls_total|tool=read_recent_logs|outcome=ok": 2,
+    "simulated_remediations_total|action_id=flush_netflix_fixture_cache|outcome=ok": 1,
+    "spans_total|name=agent.diagnostic_analyst|status=ok": 1,
+    "spans_total|name=agent.sre_reviewer|status=ok": 1,
+    "spans_total|name=diagnostics.read_only|status=ok": 1,
+    "spans_total|name=knowledge.retrieve|status=ok": 1,
+    "spans_total|name=recovery.verify|status=ok": 1,
+    "spans_total|name=remediation.propose|status=ok": 1,
+    "spans_total|name=report.render|status=ok": 1,
+    "spans_total|name=request.understand|status=ok": 1,
+    "spans_total|name=simulation.apply|status=ok": 1,
+    "workflow_runs_total|outcome=recovered": 1
+  },
+  "duration_ms": {
+    "agent.diagnostic_analyst": 0.172,
+    "agent.sre_reviewer": 0.049,
+    "diagnostics.read_only": 285.073,
+    "knowledge.retrieve": 0.686,
+    "mcp.apply_simulated_remediation": 1.411,
+    "mcp.dns_lookup": 2.794,
+    "mcp.inspect_routing_rule": 1.792,
+    "mcp.node_health": 1.75,
+    "mcp.proxy_health": 1.886,
+    "mcp.read_recent_logs": 1.936,
+    "recovery.verify": 267.486,
+    "remediation.propose": 0.027,
+    "report.render": 0.033,
+    "request.understand": 0.002,
+    "simulation.apply": 284.846
+  },
+  "run_id": "eval-stale-dns-target"
+}

@@ -23,6 +23,7 @@ async def test_stdio_client_calls_exactly_five_read_only_tools_in_order():
     assert tuple(before) == READ_TOOL_ORDER
     assert before["inspect_routing_rule"]["action"] == "DIRECT"
     assert after["inspect_routing_rule"]["action"] == "PROXY"
+    assert before["read_recent_logs"]["events"][1]["message"] == "[UNTRUSTED LOG TEXT REDACTED]"
     assert [tool for tool, result in outcomes if result == "ok"] == list(READ_TOOL_ORDER)
 
 

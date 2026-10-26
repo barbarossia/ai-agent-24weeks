@@ -85,6 +85,8 @@ The lab container has no network and uses a read-only root filesystem. SQLite ch
 
 `uv run w24-sre eval` checks three complete cause-to-verification flows plus approval-denial and prompt-injection guards. Outputs are deterministic JSON/JSONL suitable for review. The checked-in `evidence/` directory contains the reproducible eval summary, one complete trace/report per case, and a security-boundary summary.
 
+See [the evidence index](evidence/README.md), [security model](evidence/security-model.md), [Compose verification](evidence/compose-verification.md), and [interactive approval demo](evidence/operator-demo/transcript.txt) with its [trace](evidence/operator-demo/trace.jsonl) and [metrics](evidence/operator-demo/metrics.json).
+
 ## Source references
 
 - MCP SDK v2 server/client and stdio patterns: [official MCP Python SDK](https://py.sdk.modelcontextprotocol.io/), [stdio transports](https://py.sdk.modelcontextprotocol.io/client/transports/), and [server execution](https://py.sdk.modelcontextprotocol.io/run/).
