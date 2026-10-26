@@ -1,0 +1,42 @@
+name: week23-production-deployment
+
+on:
+  pull_request:
+    paths:
+      - "week23/production-deployment-lab/**"
+      - ".github/workflows/week23-production-deployment.yml"
+  workflow_dispatch:
+
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: week23/production-deployment-lab
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install lab and test dependencies
+        run: python -m pip install -e '.[dev]'
+
+      - name: Unit and API tests
+        run: python -m pytest -q
+
+      - name: Generate runner-only secret and run Compose eval/recovery smoke
+        run: |
+          ci_password="$(python -c 'import secrets; print(secrets.token_urlsafe(36))')"
+          echo "::add-mask::$ci_password"
+          echo "POSTGRES_PASSWORD=$ci_password" >> "$GITHUB_ENV"
+          export POSTGRES_PASSWORD="$ci_password"
+          ./scripts/verify-compose.sh
+
+      - name: Tear down containers and ephemeral database
+        if: always()
+        run: |
+          if [ -f secrets/postgres_password ]; then
+            docker compose down --volumes --remove-orphans
+          fi
