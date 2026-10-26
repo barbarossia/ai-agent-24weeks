@@ -1,0 +1,31 @@
+{
+  "counters": {
+    "knowledge_redactions_total|source=obsidian": 1,
+    "mcp_tool_calls_total|tool=dns_lookup|outcome=ok": 1,
+    "mcp_tool_calls_total|tool=inspect_routing_rule|outcome=ok": 1,
+    "mcp_tool_calls_total|tool=node_health|outcome=ok": 1,
+    "mcp_tool_calls_total|tool=proxy_health|outcome=ok": 1,
+    "mcp_tool_calls_total|tool=read_recent_logs|outcome=ok": 1,
+    "spans_total|name=agent.diagnostic_analyst|status=ok": 1,
+    "spans_total|name=agent.sre_reviewer|status=ok": 1,
+    "spans_total|name=diagnostics.read_only|status=ok": 1,
+    "spans_total|name=knowledge.retrieve|status=ok": 1,
+    "spans_total|name=remediation.propose|status=ok": 1,
+    "spans_total|name=request.understand|status=ok": 1,
+    "workflow_runs_total|outcome=paused": 1
+  },
+  "duration_ms": {
+    "agent.diagnostic_analyst": 0.079,
+    "agent.sre_reviewer": 0.032,
+    "diagnostics.read_only": 274.582,
+    "knowledge.retrieve": 0.671,
+    "mcp.dns_lookup": 1.234,
+    "mcp.inspect_routing_rule": 0.865,
+    "mcp.node_health": 0.884,
+    "mcp.proxy_health": 0.974,
+    "mcp.read_recent_logs": 0.845,
+    "remediation.propose": 0.025,
+    "request.understand": 0.001
+  },
+  "run_id": "eval-approval-pause"
+}

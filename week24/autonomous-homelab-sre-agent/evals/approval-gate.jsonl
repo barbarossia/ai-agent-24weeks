@@ -1,0 +1,2 @@
+{"case_id":"proxy-rule-mismatch","request":"Netflix cannot be reached.","decision":"pause"}
+{"case_id":"proxy-rule-mismatch","request":"Netflix cannot be reached.","decision":"reject"}

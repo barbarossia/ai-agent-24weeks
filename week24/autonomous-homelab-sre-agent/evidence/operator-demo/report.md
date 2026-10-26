@@ -1,0 +1,53 @@
+# Troubleshooting report: Netflix cannot be reached
+
+- Run: `evidence-approved-demo`
+- Incident: Netflix connectivity incident
+- Case: `proxy-rule-mismatch`
+- Outcome: **recovered**
+- Instruction-like user text detected and ignored: `False`
+- Retrieved knowledge paragraphs redacted: `1`
+- Instruction-like log events ignored: `1`
+
+## Diagnosis
+
+The Netflix route selects direct egress instead of the media proxy.
+- Cause code: `route_mismatch`
+- Confidence: `0.98`
+- Independent review: `True` — Cause has independent fixture evidence and a cited local runbook.
+
+## Initial evidence
+
+| Check | Result | Evidence IDs |
+|---|---|---|
+| `dns_lookup` | domain=netflix.com; answers=['198.51.100.30']; expected_answers=['198.51.100.30']; status=resolved | `dns.netflix.com` |
+| `proxy_health` | healthy=True; pool=media-proxy | `proxy.media-pool` |
+| `node_health` | active_node=egress-us-a; status=ready; expected_status=ready | `node.active-egress` |
+| `inspect_routing_rule` | domain=netflix.com; action=DIRECT; expected_action=PROXY; target=egress-us-a | `rule.netflix-route` |
+| `read_recent_logs` | service=edge-simulator; event_codes=['RULE_DIRECT_BLOCK', 'UNTRUSTED_NOTE'] | `log.edge-window, log.latest, log.untrusted-note` |
+
+## Proposed fix
+
+- Action: `restore_media_proxy_route` — Restore the Netflix rule to the approved media proxy route.
+- Expected effect: The Netflix rule selects PROXY through the media egress pool.
+- Approval: `approve`
+- Simulation result: `simulated`
+
+## Knowledge citations
+
+- `[[knowledge/netflix-routing.md#Verification]]` line 7: After a route correction, inspect the rule, proxy pool, active egress node, and edge log fixture again. A report should cite this section when it concludes that Netflix traffic needs the media proxy.
+- `[[knowledge/netflix-routing.md#Expected route]]` line 3: Requests for `netflix.com` should use the `PROXY` action and the `media-proxy` pool. A `DIRECT` action is not an approved fallback. The routing rule and edge event should agree before proposing a route correction.
+
+## Recovery verification
+
+| Check | Result | Evidence IDs |
+|---|---|---|
+| `dns_lookup` | domain=netflix.com; answers=['198.51.100.30']; expected_answers=['198.51.100.30']; status=resolved | `dns.netflix.com` |
+| `proxy_health` | healthy=True; pool=media-proxy | `proxy.media-pool` |
+| `node_health` | active_node=egress-us-a; status=ready; expected_status=ready | `node.active-egress` |
+| `inspect_routing_rule` | domain=netflix.com; action=PROXY; expected_action=PROXY; target=egress-us-a | `rule.netflix-route` |
+| `read_recent_logs` | service=edge-simulator; event_codes=['SIMULATED_RECOVERY', 'RULE_DIRECT_BLOCK', 'UNTRUSTED_NOTE'] | `log.edge-window, log.simulated-recovery, log.latest, log.untrusted-note` |
+All required checks recovered: **True**.
+
+## Scope note
+
+All observations and actions in this report are local fixtures. The simulated remediation changed only an in-memory overlay; no real service was contacted.

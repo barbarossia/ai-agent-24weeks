@@ -1,0 +1,25 @@
+services:
+  lab:
+    build: .
+    image: week24-autonomous-homelab-sre-agent:local
+    command: ["eval"]
+    init: true
+    user: "65532:65532"
+    read_only: true
+    network_mode: none
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    tmpfs:
+      - /tmp:rw,noexec,nosuid,nodev,size=32m
+    environment:
+      LANGGRAPH_STRICT_MSGPACK: "true"
+      W24_DATA_DIR: /data
+    volumes:
+      - lab-data:/data
+      - knowledge-reports:/app/vault/knowledge/reports
+
+volumes:
+  lab-data:
+  knowledge-reports:
