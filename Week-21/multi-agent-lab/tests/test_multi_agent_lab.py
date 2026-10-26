@@ -19,6 +19,10 @@ class MultiAgentLabTests(unittest.TestCase):
             "Check Docker container status": (AgentId.DOCKER,),
             "Find the DNS runbook procedure": (AgentId.KNOWLEDGE,),
             "Diagnose the API service outage": (AgentId.NETWORK, AgentId.DOCKER),
+            "Docker service outage": (AgentId.NETWORK, AgentId.DOCKER),
+            "DNS outage for api.lab.test": (AgentId.NETWORK, AgentId.DOCKER),
+            "ESXi host outage": (AgentId.ESXI,),
+            "Find the runbook procedure for a DNS outage": (AgentId.KNOWLEDGE,),
         }
         for question, specialists in expected.items():
             with self.subTest(question=question):

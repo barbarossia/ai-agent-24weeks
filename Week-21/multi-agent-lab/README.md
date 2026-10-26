@@ -23,7 +23,9 @@ six-dimension comparison. Repeated runs produce the same output.
 
 `Supervisor.route()` deterministically maps explicit network/DNS, ESXi,
 Docker/container, and knowledge/runbook terms to one specialist. An outage
-request routes Network and Docker tasks together through a thread pool. Each
+request routes Network and Docker tasks together through a thread pool, even
+when its text also contains a DNS or Docker specialist keyword. Explicit
+runbook requests route to Knowledge, and ESXi host outages route to ESXi. Each
 worker returns a `SpecialistReport` containing typed `Evidence` records. Every
 record carries `Provenance` with its producing agent, tool, request ID, and,
 for derived results, source evidence IDs.

@@ -50,18 +50,20 @@ class Supervisor:
         text = question.casefold()
         if any(word in text for word in ("knowledge", "runbook", "procedure")):
             return RoutingDecision(question, (AgentId.KNOWLEDGE,), "knowledge_terms")
+        if any(word in text for word in ("outage", "unreachable", "unavailable")):
+            if any(word in text for word in ("esxi", "vmware", "datastore")):
+                return RoutingDecision(question, (AgentId.ESXI,), "virtualization_outage")
+            return RoutingDecision(
+                question,
+                (AgentId.NETWORK, AgentId.DOCKER),
+                "outage_requires_network_and_container_evidence",
+            )
         if any(word in text for word in ("dns", "network", "gateway", "route")):
             return RoutingDecision(question, (AgentId.NETWORK,), "network_or_dns_terms")
         if any(word in text for word in ("esxi", "vmware", "datastore", "host status")):
             return RoutingDecision(question, (AgentId.ESXI,), "virtualization_terms")
         if any(word in text for word in ("docker", "container")):
             return RoutingDecision(question, (AgentId.DOCKER,), "container_terms")
-        if any(word in text for word in ("outage", "unreachable", "unavailable")):
-            return RoutingDecision(
-                question,
-                (AgentId.NETWORK, AgentId.DOCKER),
-                "service_outage_requires_network_and_container_evidence",
-            )
         raise UnroutableRequest("request_does_not_match_a_specialist")
 
     def run(self, question: str) -> RunResult:
