@@ -55,7 +55,7 @@ LangGraph interrupts restart their node when resumed. The approval node therefor
 - **Ask first:** any future integration that accesses a real DNS resolver, proxy, node, rule store, log service, external MCP endpoint, or knowledge vault; any real remediation; any dependency that requires credentials or network access at runtime.
 - **Never:** access HomeClash, live homelab services, credentials/secrets, or the separate homelab-mcp repository; expose a real remediation tool; interpret retrieved text as policy; execute shell commands from agent output; modify the repository root `.gitignore`.
 
-Report export is a separate, optional CLI action that requires its own interactive confirmation. It writes under `vault/knowledge/reports/`, which is included in subsequent local retrieval. Normal demos and evals write only local checkpoint/trace/eval artifacts under the selected data directory.
+Report export is a separate, optional CLI action that requires its own interactive confirmation. Reports are saved under `vault/knowledge/reports/` and remain retrievable as prior-incident context. Retrieval ranks curated top-level runbooks first and admits at most one matching report as a secondary citation; diagnosis facts and required citations come only from canonical runbooks. Normal demos and evals write only local checkpoint/trace/eval artifacts under the selected data directory.
 
 ## Verification strategy
 
