@@ -1,0 +1,20 @@
+[
+  {
+    "name": "sum-positive-and-negative",
+    "operation": "sum",
+    "input": {"numbers": [10, -4, 2]},
+    "expected_result": {"total": 8}
+  },
+  {
+    "name": "sum-single-value",
+    "operation": "sum",
+    "input": {"numbers": [7]},
+    "expected_result": {"total": 7}
+  },
+  {
+    "name": "echo-fixed-message",
+    "operation": "echo",
+    "input": {"message": "week23-deterministic-eval"},
+    "expected_result": {"message": "week23-deterministic-eval"}
+  }
+]

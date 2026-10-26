@@ -113,7 +113,7 @@ def create_app(store: TaskStore | None = None) -> FastAPI:
                 logger.info(json.dumps({
                     "event": "http_request",
                     "method": request.method,
-                    "path": request.url.path,
+                    "route": route,
                     "status": status_code,
                     "duration_ms": round(elapsed * 1000, 3),
                     "trace_id": f"{span.get_span_context().trace_id:032x}",

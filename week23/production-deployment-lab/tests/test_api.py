@@ -71,7 +71,10 @@ def test_metrics_use_normalized_route_labels() -> None:
         created = client.post(
             "/v1/tasks", json={"operation": "echo", "input": {"message": "metrics"}},
         ).json()
+        fetched = client.get(f"/v1/tasks/{created['id']}")
         metrics = client.get("/metrics").text
 
+    assert fetched.status_code == 200
     assert "agent_task_requests_total{operation=\"echo\"} 1.0" in metrics
-    assert 'route="/v1/tasks/{task_id}"' not in metrics
+    assert 'route="/v1/tasks/{task_id}"' in metrics
+    assert f'route="/v1/tasks/{created["id"]}"' not in metrics
