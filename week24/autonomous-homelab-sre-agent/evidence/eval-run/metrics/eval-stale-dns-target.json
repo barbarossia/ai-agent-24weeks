@@ -21,21 +21,21 @@
     "workflow_runs_total|outcome=recovered": 1
   },
   "duration_ms": {
-    "agent.diagnostic_analyst": 0.172,
-    "agent.sre_reviewer": 0.049,
-    "diagnostics.read_only": 285.073,
-    "knowledge.retrieve": 0.686,
-    "mcp.apply_simulated_remediation": 1.411,
-    "mcp.dns_lookup": 2.794,
-    "mcp.inspect_routing_rule": 1.792,
-    "mcp.node_health": 1.75,
-    "mcp.proxy_health": 1.886,
-    "mcp.read_recent_logs": 1.936,
-    "recovery.verify": 267.486,
-    "remediation.propose": 0.027,
-    "report.render": 0.033,
-    "request.understand": 0.002,
-    "simulation.apply": 284.846
+    "agent.diagnostic_analyst": 0.157,
+    "agent.sre_reviewer": 0.032,
+    "diagnostics.read_only": 272.448,
+    "knowledge.retrieve": 0.751,
+    "mcp.apply_simulated_remediation": 1.285,
+    "mcp.dns_lookup": 2.529,
+    "mcp.inspect_routing_rule": 1.756,
+    "mcp.node_health": 1.802,
+    "mcp.proxy_health": 1.909,
+    "mcp.read_recent_logs": 1.748,
+    "recovery.verify": 276.302,
+    "remediation.propose": 0.026,
+    "report.render": 0.038,
+    "request.understand": 0.001,
+    "simulation.apply": 272.406
   },
   "run_id": "eval-stale-dns-target"
 }

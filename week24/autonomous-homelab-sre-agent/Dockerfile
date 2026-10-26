@@ -22,8 +22,8 @@ COPY vault ./vault
 COPY evals ./evals
 RUN uv sync --locked --no-dev --no-editable \
     && rm -f /bin/uv /bin/uvx \
-    && mkdir -p /data /app/vault/reports \
-    && chown 65532:65532 /data /app/vault/reports
+    && mkdir -p /data /app/vault/knowledge/reports \
+    && chown 65532:65532 /data /app/vault/knowledge/reports
 
 USER 65532:65532
 ENTRYPOINT ["w24-sre"]

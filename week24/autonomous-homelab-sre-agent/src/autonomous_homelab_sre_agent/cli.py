@@ -83,7 +83,7 @@ def _print_run(run) -> int:
 
 
 def _confirm_report_export(report: str, run_id: str) -> None:
-    destination = VAULT_ROOT / "reports" / f"troubleshooting-{run_id}.md"
+    destination = VAULT_ROOT / "knowledge" / "reports" / f"troubleshooting-{run_id}.md"
     print(f"\nSave this report as a new local knowledge note at {destination}?")
     try:
         answer = input("Type SAVE to confirm this file write: ").strip()

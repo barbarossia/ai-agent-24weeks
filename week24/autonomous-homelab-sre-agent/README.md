@@ -15,9 +15,10 @@ uv run w24-sre eval
 uv run w24-sre demo --case proxy-rule-mismatch
 ```
 
-The interactive demo prints the diagnosis and proposed action, then pauses at a LangGraph checkpoint. It asks for an explicit `approve` or `reject` decision. EOF or any other response leaves the run paused; no write tool is started. The optional `--decision approve` flag is also an explicit runtime approval input. A paused run prints its thread ID so it can be resumed with `uv run w24-sre resume THREAD_ID --decision approve` (or `reject`).
+The interactive demo prints the diagnosis and proposed action, then pauses at a LangGraph checkpoint. It asks for an explicit `approve` or `reject` decision. EOF or any other response leaves the run paused; no write tool is started. The optional `--decision approve` flag is also an explicit runtime approval input. A paused run prints its thread ID so it can be resumed with `uv run w24-sre resume THREAD_ID --decision approve --approver alice`; use `--decision reject` to decline it.
 
 Eval fixtures provide explicit synthetic approvals so the three demos can be replayed deterministically. They do not authorize any real action.
+Separate `evals/approval-gate.jsonl` fixtures exercise a paused run and a rejected proposal; both must produce zero simulated-write calls.
 
 ## Architecture
 
@@ -47,8 +48,8 @@ See [the full specification](docs/spec.md) and [the Mermaid source](docs/archite
 - A separate simulated-write MCP subprocess exposes one allowlisted tool. It is not started until the approval interrupt resumes with an `approve` decision bound to the exact proposal digest. The process also requires a one-run capability passed only after approval; the capability is excluded from checkpoints, traces, and output.
 - The write tool returns an in-memory overlay. It does not contact a service, edit a file, or change an actual rule, resolver, node, or proxy.
 - Markdown notes, user text, and logs are untrusted data. Retrieval removes instruction-like paragraphs; correlation reads structured status fields and fixed event codes only.
-- Docker runs with `network_mode: none`, a read-only root filesystem, dropped Linux capabilities, and only a local checkpoint data volume.
-- Saving a report into the fixture knowledge folder is a separate optional operation and requires its own interactive confirmation.
+- Docker runs with `network_mode: none`, a read-only root filesystem, and dropped Linux capabilities. `/data` holds checkpoints/run artifacts; a separate named volume holds only confirmed report exports under `vault/knowledge/reports/`.
+- Saving a report under `vault/knowledge/reports/` is a separate optional operation and requires its own interactive confirmation. The retriever indexes that folder on later runs.
 
 This lab is a portfolio simulator, not a production SRE agent or a connector to a live MCP boundary.
 
@@ -66,11 +67,11 @@ This lab is a portfolio simulator, not a production SRE agent or a connector to 
 uv run w24-sre eval
 uv run w24-sre demo --case proxy-rule-mismatch
 uv run w24-sre demo --case unhealthy-egress-node --decision reject
-uv run w24-sre resume <thread-id> --decision approve
+uv run w24-sre resume THREAD_ID --decision approve --approver alice
 uv run w24-sre metrics
 ```
 
-Run `uv run w24-sre --help` for data-directory and report-export options. Report export asks for separate confirmation and accepts only a generated report plus a fixed `vault/reports/` destination.
+Run `uv run w24-sre --help` for data-directory and report-export options. Report export asks for separate confirmation and accepts only a generated report plus a fixed `vault/knowledge/reports/` destination.
 
 ## Docker Compose
 
@@ -83,7 +84,7 @@ The lab container has no network and uses a read-only root filesystem. SQLite ch
 
 ## Evals and portfolio evidence
 
-`uv run w24-sre eval` checks three complete cause-to-verification flows plus approval-denial and prompt-injection guards. Outputs are deterministic JSON/JSONL suitable for review. The checked-in `evidence/` directory contains the reproducible eval summary, one complete trace/report per case, and a security-boundary summary.
+`uv run w24-sre eval` checks three complete cause-to-verification flows, plus separate pause and rejection cases. Approved flows must pass through an observed approval interrupt; the eval also checks prompt-injection handling. Pass/fail summaries and reports are deterministic. Traces and metrics include observed durations and can vary between runs. The checked-in `evidence/` directory contains the eval summary, traces/reports, and security-boundary details.
 
 See [the evidence index](evidence/README.md), [security model](evidence/security-model.md), [Compose verification](evidence/compose-verification.md), and [interactive approval demo](evidence/operator-demo/transcript.txt) with its [trace](evidence/operator-demo/trace.jsonl) and [metrics](evidence/operator-demo/metrics.json).
 

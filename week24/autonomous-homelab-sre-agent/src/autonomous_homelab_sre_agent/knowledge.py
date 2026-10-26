@@ -70,7 +70,7 @@ class ObsidianRetriever:
         query_tokens = {word.casefold() for word in WORD.findall(f"{query} {topic_terms}")}
         candidates: list[tuple[int, str, int, str, str]] = []
         redacted = 0
-        for path in sorted(self.knowledge_root.glob("*.md")):
+        for path in sorted(self.knowledge_root.rglob("*.md")):
             resolved = path.resolve()
             if not resolved.is_relative_to(self.knowledge_root) or not resolved.is_file():
                 continue

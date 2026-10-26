@@ -30,7 +30,7 @@ src/autonomous_homelab_sre_agent/  workflow, MCP clients/servers, policy, teleme
 vault/knowledge/                    synthetic Obsidian Markdown runbooks
 evals/                               fixed golden scenarios and expected outcomes
 tests/                               offline unit, MCP, workflow, and eval checks
-evidence/                            deterministic eval and trace artifacts
+evidence/                            eval results, reports, traces, and security evidence
 docs/                                this specification and architecture notes
 ```
 
@@ -43,7 +43,7 @@ The checkpointed state contains the normalized incident, retrieved citations, re
 3. Call five fixture-only read tools: DNS, proxy, node, rule, and logs.
 4. Let the diagnostic specialist identify a cause from structured evidence; let an independent reviewer require corroboration and a cited runbook.
 5. Propose one scenario allowlisted simulated action.
-6. Interrupt and checkpoint before any write-capable MCP process is started.
+6. Interrupt and checkpoint before any write-capable MCP process is started. The evaluator confirms each approved run received this interrupt, plus separate paused and rejected runs with zero write calls.
 7. On a matching explicit approval, issue a one-run capability and call the isolated simulated-write MCP tool. On reject, stop without calling it.
 8. Re-run the same five read-only checks with the returned simulation overlay, then render a report.
 
@@ -55,14 +55,14 @@ LangGraph interrupts restart their node when resumed. The approval node therefor
 - **Ask first:** any future integration that accesses a real DNS resolver, proxy, node, rule store, log service, external MCP endpoint, or knowledge vault; any real remediation; any dependency that requires credentials or network access at runtime.
 - **Never:** access HomeClash, live homelab services, credentials/secrets, or the separate homelab-mcp repository; expose a real remediation tool; interpret retrieved text as policy; execute shell commands from agent output; modify the repository root `.gitignore`.
 
-Report export is a separate, optional CLI action that requires its own interactive confirmation. Normal demos and evals print reports and write only local checkpoint/trace/eval artifacts under the selected data directory.
+Report export is a separate, optional CLI action that requires its own interactive confirmation. It writes under `vault/knowledge/reports/`, which is included in subsequent local retrieval. Normal demos and evals write only local checkpoint/trace/eval artifacts under the selected data directory.
 
 ## Verification strategy
 
 - Unit checks cover request bounds, allowlists, injection handling, retrieval provenance, evidence correlation, proposal binding, and metrics/traces.
 - MCP tests verify the actual tool inventory for each server role and reject missing/invalid write capabilities.
 - Workflow tests cover interrupt/checkpoint/resume, approval, rejection, no approval, exactly one approved write call, and post-action recovery.
-- The golden eval contains at least three complete deterministic cases and asserts cause, evidence, citations, tool order, approval gate, recovery, and report fields.
+- The golden eval contains at least three complete cases and asserts cause, evidence, citations, tool order, approval-interrupt observation, recovery, and report fields. Separate pause and rejection fixtures assert zero writes.
 - Compose verification checks the resolved configuration and runs the offline eval container with no network and a read-only root filesystem.
 
 ## Success criteria
@@ -71,5 +71,5 @@ Report export is a separate, optional CLI action that requires its own interacti
 - Every diagnosis has multiple independent evidence references and a cited local Obsidian source.
 - Five named read checks run before and after an approved action.
 - No write MCP process/tool call occurs before a matching runtime approval; rejected and paused runs do not write.
-- Three complete offline eval demos pass deterministically and emit portable trace, metrics, and report evidence.
+- Three complete offline eval demos pass deterministically and emit trace, metrics, and report evidence. Pass/fail summaries and reports are deterministic; measured trace and metric durations vary by run.
 - Docker Compose can run the evals with network disabled and permission-separated simulation boundaries.

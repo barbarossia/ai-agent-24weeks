@@ -4,6 +4,7 @@ import pytest
 
 from autonomous_homelab_sre_agent.report import save_report_to_knowledge
 from autonomous_homelab_sre_agent.telemetry import TraceRecorder
+from autonomous_homelab_sre_agent.knowledge import ObsidianRetriever
 
 
 def test_trace_links_tool_span_to_node_and_exports_metrics(tmp_path):
@@ -22,18 +23,21 @@ def test_trace_links_tool_span_to_node_and_exports_metrics(tmp_path):
     assert metrics_path.exists()
 
 
-def test_knowledge_report_export_is_fixed_to_vault_and_rejects_path_injection(tmp_path):
+def test_knowledge_report_export_is_indexed_and_rejects_path_injection(tmp_path):
     vault = tmp_path / "vault"
-    path = save_report_to_knowledge("# Report\n", "run_123", vault)
-    assert path == vault / "reports" / "troubleshooting-run_123.md"
-    assert path.read_text() == "# Report\n"
+    report = "# Netflix proxy recovery\nThe synthetic route was restored successfully.\n"
+    path = save_report_to_knowledge(report, "run_123", vault)
+    assert path == vault / "knowledge" / "reports" / "troubleshooting-run_123.md"
+    assert path.read_text() == report
+    retrieved = ObsidianRetriever(vault).retrieve("Netflix proxy recovery")
+    assert any(item.source == "knowledge/reports/troubleshooting-run_123.md" for item in retrieved.citations)
     with pytest.raises(ValueError, match="invalid run identifier"):
         save_report_to_knowledge("# Report\n", "../../outside", vault)
 
 
 def test_knowledge_report_export_rejects_symlink_target(tmp_path):
     vault = tmp_path / "vault"
-    reports = vault / "reports"
+    reports = vault / "knowledge" / "reports"
     reports.mkdir(parents=True)
     outside = tmp_path / "outside.md"
     outside.write_text("leave alone")

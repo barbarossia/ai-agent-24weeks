@@ -21,21 +21,21 @@
     "workflow_runs_total|outcome=recovered": 1
   },
   "duration_ms": {
-    "agent.diagnostic_analyst": 0.258,
-    "agent.sre_reviewer": 0.04,
-    "diagnostics.read_only": 288.184,
-    "knowledge.retrieve": 0.803,
-    "mcp.apply_simulated_remediation": 1.218,
-    "mcp.dns_lookup": 17.293,
-    "mcp.inspect_routing_rule": 1.834,
-    "mcp.node_health": 1.806,
-    "mcp.proxy_health": 2.041,
-    "mcp.read_recent_logs": 1.748,
-    "recovery.verify": 273.276,
-    "remediation.propose": 0.025,
-    "report.render": 0.038,
+    "agent.diagnostic_analyst": 0.265,
+    "agent.sre_reviewer": 0.039,
+    "diagnostics.read_only": 317.139,
+    "knowledge.retrieve": 0.791,
+    "mcp.apply_simulated_remediation": 1.342,
+    "mcp.dns_lookup": 22.417,
+    "mcp.inspect_routing_rule": 1.752,
+    "mcp.node_health": 1.85,
+    "mcp.proxy_health": 2.142,
+    "mcp.read_recent_logs": 1.849,
+    "recovery.verify": 271.757,
+    "remediation.propose": 0.028,
+    "report.render": 0.044,
     "request.understand": 0.001,
-    "simulation.apply": 265.801
+    "simulation.apply": 285.541
   },
   "run_id": "eval-proxy-rule-mismatch"
 }

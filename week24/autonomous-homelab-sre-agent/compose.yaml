@@ -18,7 +18,7 @@ services:
       W24_DATA_DIR: /data
     volumes:
       - lab-data:/data
-      - knowledge-reports:/app/vault/reports
+      - knowledge-reports:/app/vault/knowledge/reports
 
 volumes:
   lab-data:

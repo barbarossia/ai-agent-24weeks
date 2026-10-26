@@ -5,5 +5,6 @@ __pycache__/
 data/*.sqlite
 data/*.sqlite-*
 data/traces/
+data/metrics/
 data/evals/
-vault/reports/
+vault/knowledge/reports/

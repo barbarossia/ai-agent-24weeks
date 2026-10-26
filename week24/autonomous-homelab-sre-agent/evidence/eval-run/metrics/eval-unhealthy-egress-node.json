@@ -21,21 +21,21 @@
     "workflow_runs_total|outcome=recovered": 1
   },
   "duration_ms": {
-    "agent.diagnostic_analyst": 0.08,
-    "agent.sre_reviewer": 0.034,
-    "diagnostics.read_only": 272.034,
-    "knowledge.retrieve": 0.653,
-    "mcp.apply_simulated_remediation": 1.426,
-    "mcp.dns_lookup": 2.579,
-    "mcp.inspect_routing_rule": 1.89,
-    "mcp.node_health": 1.765,
-    "mcp.proxy_health": 1.891,
-    "mcp.read_recent_logs": 1.715,
-    "recovery.verify": 273.009,
-    "remediation.propose": 0.036,
-    "report.render": 0.039,
+    "agent.diagnostic_analyst": 0.085,
+    "agent.sre_reviewer": 0.038,
+    "diagnostics.read_only": 274.467,
+    "knowledge.retrieve": 0.686,
+    "mcp.apply_simulated_remediation": 1.508,
+    "mcp.dns_lookup": 2.647,
+    "mcp.inspect_routing_rule": 2.07,
+    "mcp.node_health": 1.92,
+    "mcp.proxy_health": 2.046,
+    "mcp.read_recent_logs": 2.562,
+    "recovery.verify": 286.773,
+    "remediation.propose": 0.028,
+    "report.render": 0.031,
     "request.understand": 0.001,
-    "simulation.apply": 259.193
+    "simulation.apply": 303.697
   },
   "run_id": "eval-unhealthy-egress-node"
 }

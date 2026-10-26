@@ -1,11 +1,46 @@
 {
+  "approval_gate": {
+    "passed": true,
+    "pause": {
+      "approval_provider_calls": 0,
+      "checks": {
+        "approval_not_recorded_without_input": true,
+        "interrupt_left_run_pending": true,
+        "no_write_tool_call": true,
+        "only_preapproval_reads_ran": true,
+        "remediation_not_started": true
+      },
+      "passed": true,
+      "report": null,
+      "trace": "traces/eval-approval-pause.jsonl",
+      "write_tool_calls": 0
+    },
+    "reject": {
+      "approval_provider_calls": 1,
+      "checks": {
+        "interrupt_observed_before_rejection": true,
+        "no_write_tool_call": true,
+        "only_preapproval_reads_ran": true,
+        "rejection_recorded": true,
+        "rejection_reported": true,
+        "remediation_not_started": true,
+        "verification_not_run": true
+      },
+      "passed": true,
+      "report": "reports/approval-reject.md",
+      "trace": "traces/eval-approval-reject.jsonl",
+      "write_tool_calls": 0
+    }
+  },
   "case_count": 3,
   "cases": [
     {
       "action_id": "restore_media_proxy_route",
+      "approval_provider_calls": 1,
       "case_id": "proxy-rule-mismatch",
       "cause": "route_mismatch",
       "checks": {
+        "approval_interrupt_observed": true,
         "cited_required_source": true,
         "complete_report": true,
         "expected_action": true,
@@ -32,9 +67,11 @@
     },
     {
       "action_id": "shift_to_ready_egress_node",
+      "approval_provider_calls": 1,
       "case_id": "unhealthy-egress-node",
       "cause": "node_unhealthy",
       "checks": {
+        "approval_interrupt_observed": true,
         "cited_required_source": true,
         "complete_report": true,
         "expected_action": true,
@@ -61,9 +98,11 @@
     },
     {
       "action_id": "flush_netflix_fixture_cache",
+      "approval_provider_calls": 1,
       "case_id": "stale-dns-target",
       "cause": "dns_stale_target",
       "checks": {
+        "approval_interrupt_observed": true,
         "cited_required_source": true,
         "complete_report": true,
         "expected_action": true,

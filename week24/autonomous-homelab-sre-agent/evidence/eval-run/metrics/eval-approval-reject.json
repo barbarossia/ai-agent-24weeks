@@ -1,0 +1,34 @@
+{
+  "counters": {
+    "approval_decisions_total|decision=reject": 1,
+    "knowledge_redactions_total|source=obsidian": 1,
+    "mcp_tool_calls_total|tool=dns_lookup|outcome=ok": 1,
+    "mcp_tool_calls_total|tool=inspect_routing_rule|outcome=ok": 1,
+    "mcp_tool_calls_total|tool=node_health|outcome=ok": 1,
+    "mcp_tool_calls_total|tool=proxy_health|outcome=ok": 1,
+    "mcp_tool_calls_total|tool=read_recent_logs|outcome=ok": 1,
+    "spans_total|name=agent.diagnostic_analyst|status=ok": 1,
+    "spans_total|name=agent.sre_reviewer|status=ok": 1,
+    "spans_total|name=diagnostics.read_only|status=ok": 1,
+    "spans_total|name=knowledge.retrieve|status=ok": 1,
+    "spans_total|name=remediation.propose|status=ok": 1,
+    "spans_total|name=report.render|status=ok": 1,
+    "spans_total|name=request.understand|status=ok": 1,
+    "workflow_runs_total|outcome=rejected": 1
+  },
+  "duration_ms": {
+    "agent.diagnostic_analyst": 0.078,
+    "agent.sre_reviewer": 0.03,
+    "diagnostics.read_only": 264.767,
+    "knowledge.retrieve": 0.679,
+    "mcp.dns_lookup": 1.298,
+    "mcp.inspect_routing_rule": 0.899,
+    "mcp.node_health": 0.918,
+    "mcp.proxy_health": 0.984,
+    "mcp.read_recent_logs": 0.863,
+    "remediation.propose": 0.028,
+    "report.render": 0.027,
+    "request.understand": 0.001
+  },
+  "run_id": "eval-approval-reject"
+}

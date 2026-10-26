@@ -99,15 +99,18 @@ def _append_evidence_table(lines: list[str], observations: dict[str, dict[str, A
 
 
 def save_report_to_knowledge(report: str, run_id: str, vault_root: Path) -> Path:
-    """Write one generated report under the fixed reports folder, with no caller path input."""
+    """Save one generated report under indexed vault knowledge, with no caller path input."""
     import re
 
     if not re.fullmatch(r"[A-Za-z0-9_-]{1,100}", run_id):
         raise ValueError("invalid run identifier")
     root = vault_root.resolve()
-    report_dir = (root / "reports").resolve()
-    if not report_dir.is_relative_to(root):
-        raise ValueError("report destination must remain inside the knowledge vault")
+    knowledge_root = (root / "knowledge").resolve()
+    if not knowledge_root.is_relative_to(root):
+        raise ValueError("knowledge directory must remain inside the vault")
+    report_dir = (knowledge_root / "reports").resolve()
+    if not report_dir.is_relative_to(knowledge_root):
+        raise ValueError("report destination must remain inside vault knowledge")
     report_dir.mkdir(parents=True, exist_ok=True)
     target = report_dir / f"troubleshooting-{run_id}.md"
     if target.is_symlink() or not target.resolve().parent.is_relative_to(report_dir):
