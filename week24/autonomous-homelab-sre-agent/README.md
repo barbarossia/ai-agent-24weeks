@@ -49,7 +49,7 @@ See [the full specification](docs/spec.md) and [the Mermaid source](docs/archite
 - The write tool returns an in-memory overlay. It does not contact a service, edit a file, or change an actual rule, resolver, node, or proxy.
 - Markdown notes, user text, and logs are untrusted data. Retrieval removes instruction-like paragraphs; correlation reads structured status fields and fixed event codes only.
 - Docker runs with `network_mode: none`, a read-only root filesystem, and dropped Linux capabilities. `/data` holds checkpoints/run artifacts; a separate named volume holds only confirmed report exports under `vault/knowledge/reports/`.
-- Saving a report under `vault/knowledge/reports/` is a separate optional operation and requires its own interactive confirmation. The retriever indexes that folder on later runs.
+- Saving a report under `vault/knowledge/reports/` is a separate optional operation and requires its own interactive confirmation. Saved reports remain searchable as prior-incident context, but ranked after curated top-level runbooks and limited to one secondary citation per retrieval. Diagnosis facts and required citations come from canonical runbooks.
 
 This lab is a portfolio simulator, not a production SRE agent or a connector to a live MCP boundary.
 

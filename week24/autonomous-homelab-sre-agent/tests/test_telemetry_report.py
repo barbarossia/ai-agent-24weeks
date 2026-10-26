@@ -23,14 +23,16 @@ def test_trace_links_tool_span_to_node_and_exports_metrics(tmp_path):
     assert metrics_path.exists()
 
 
-def test_knowledge_report_export_is_indexed_and_rejects_path_injection(tmp_path):
+def test_knowledge_report_export_is_retrievable_as_secondary_context_and_rejects_path_injection(tmp_path):
     vault = tmp_path / "vault"
     report = "# Netflix proxy recovery\nThe synthetic route was restored successfully.\n"
     path = save_report_to_knowledge(report, "run_123", vault)
     assert path == vault / "knowledge" / "reports" / "troubleshooting-run_123.md"
     assert path.read_text() == report
+    save_report_to_knowledge(report, "run_456", vault)
     retrieved = ObsidianRetriever(vault).retrieve("Netflix proxy recovery")
-    assert any(item.source == "knowledge/reports/troubleshooting-run_123.md" for item in retrieved.citations)
+    assert len(retrieved.citations) == 1
+    assert retrieved.citations[0].source.startswith("knowledge/reports/")
     with pytest.raises(ValueError, match="invalid run identifier"):
         save_report_to_knowledge("# Report\n", "../../outside", vault)
 

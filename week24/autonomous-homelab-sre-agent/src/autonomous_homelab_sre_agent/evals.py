@@ -103,7 +103,12 @@ async def run_evals(
                 approval_provider=provide_approval,
             )
             state = run.state
-            citations = state.get("diagnosis", {}).get("citations", [])
+            diagnosis = state.get("diagnosis") or {}
+            proposal = state.get("proposal") or {}
+            approval = state.get("approval") or {}
+            review = state.get("review") or {}
+            incident = state.get("incident") or {}
+            citations = diagnosis.get("citations", [])
             # The exported trace is the source of truth for actual MCP calls.
             tool_calls, trace_path = _tool_calls(output_dir, thread_id)
             expected_tool_order = [
@@ -116,14 +121,14 @@ async def run_evals(
             report_path.write_text(report, encoding="utf-8")
             checks = {
                 "complete_report": bool(report),
-                "expected_cause": state.get("diagnosis", {}).get("cause_code") == case["expected_cause"],
-                "expected_action": state.get("proposal", {}).get("action_id") == case["expected_action"],
-                "human_approval_recorded": state.get("approval", {}).get("decision") == case["approval"],
+                "expected_cause": diagnosis.get("cause_code") == case["expected_cause"],
+                "expected_action": proposal.get("action_id") == case["expected_action"],
+                "human_approval_recorded": approval.get("decision") == case["approval"],
                 "approval_interrupt_observed": approval_provider_calls == 1,
-                "review_accepted": state.get("review", {}).get("accepted") is True,
+                "review_accepted": review.get("accepted") is True,
                 "cited_required_source": any(item.get("source") == case["required_source"] for item in citations),
                 "request_injection_flag_matches_expectation": (
-                    state.get("incident", {}).get("instruction_like_input") is case["expect_instruction_flag"]
+                    incident.get("instruction_like_input") is case["expect_instruction_flag"]
                 ),
                 "tool_sequence_matches": tool_calls == expected_tool_order,
                 "ten_read_calls": sum(tool in {
@@ -137,8 +142,8 @@ async def run_evals(
                 "case_id": case["case_id"],
                 "passed": all(checks.values()),
                 "checks": checks,
-                "cause": state.get("diagnosis", {}).get("cause_code"),
-                "action_id": state.get("proposal", {}).get("action_id"),
+                "cause": diagnosis.get("cause_code"),
+                "action_id": proposal.get("action_id"),
                 "citations": [item.get("source") for item in citations],
                 "read_tool_calls": sum(tool in {
                     "dns_lookup", "proxy_health", "node_health", "inspect_routing_rule", "read_recent_logs"
