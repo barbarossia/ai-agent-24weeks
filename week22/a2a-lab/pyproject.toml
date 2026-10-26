@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Deterministic local A2A interoperability lab using the official Python SDK"
 requires-python = ">=3.11"
 dependencies = [
-    "a2a-sdk[http-server]==1.1.5",
+    "a2a-sdk[http-server]==1.2.3",
+    "httpx>=0.28,<1",
+    "starlette>=0.47,<2",
     "uvicorn>=0.35,<1",
 ]
 

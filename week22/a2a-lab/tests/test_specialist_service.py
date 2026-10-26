@@ -37,7 +37,9 @@ def _start_specialist() -> tuple[subprocess.Popen[bytes], str]:
         if process.poll() is not None:
             raise RuntimeError(f"specialist exited during startup: {process.returncode}")
         try:
-            response = httpx.get(f"{url}/.well-known/agent-card.json", timeout=0.1)
+            response = httpx.get(
+                f"{url}/.well-known/agent-card.json", timeout=0.1, trust_env=False
+            )
             if response.status_code == 200:
                 return process, url
         except httpx.HTTPError:
